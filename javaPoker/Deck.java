@@ -21,22 +21,7 @@ public class Deck extends Card
 		{
 			for(int f= 1; f<14; f++)	
 			{
-			String temp="";
-			
-				switch (f){
-
-					case 1: temp= "A";
-							break;
-					case 11: temp="J";
-							break;
-					case 12: temp="Q";
-							break;
-					case 13: temp="K";
-							break;			
-					default: temp= String.valueOf(f);
-							break;
-				}
-				
+			String temp=(String.valueOf(f));
 				
 				switch (s){
 					case 1:	deck.add(new Card(temp,"H"));
@@ -70,14 +55,27 @@ public class Deck extends Card
 
 	}
 
+	
 
 
 	//Deal
-	// public void deal(Player ... players)
-	// {
-		
+	public void deal(Player ... players)
+	{
+		if(deck.size()!= 52)
+		{
+			System.out.println("Incomplete deck, please make sure deck is full");
+			return;
+		}
 
-	// }
+		while(players[players.length-1].hand.size()<5)
+		{
+			for(Player p : players)
+			{
+				p.addCard(popCard());
+			}
+		}
+
+	}
 
 	//Remove Card (popCard)
 	public Card popCard()
@@ -87,6 +85,8 @@ public class Deck extends Card
 		return temp;
 
 	}
+
+	
 	//Add Card (pushCard)
 	public void pushCard(Card c)
 	{
