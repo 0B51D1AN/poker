@@ -6,9 +6,10 @@ public class playTable extends Card
     {
 
         Card testCard= new Card("10","H");
-
-        testCard.printCard();
-
+	    Deck deck= new Deck();
+	    deck.display();
+	
+        
     }
 
 }
