@@ -12,6 +12,8 @@ public class Deck extends Card
 	//Need to check to make sure all cards in a deck are placed inside of the deck object.
 	//
 	//
+	//REMINDER TO CREATE DECK THAT IS READ FROM CSV FILE
+
 	public Deck()
 	{
 		
@@ -21,16 +23,16 @@ public class Deck extends Card
 		{
 			for(int f= 1; f<14; f++)	
 			{
-			String temp=(String.valueOf(f));
+			
 				
 				switch (s){
-					case 1:	deck.add(new Card(temp,"H"));
+					case 1:	deck.add(new Card(f,"H"));
 							break;
-					case 2: deck.add(new Card(temp,"D"));
+					case 2: deck.add(new Card(f,"D"));
 							break;
-					case 3: deck.add(new Card(temp,"S"));
+					case 3: deck.add(new Card(f,"S"));
 							break;
-					case 4: deck.add(new Card(temp,"C"));
+					case 4: deck.add(new Card(f,"C"));
 							break;
 					default: break;
 				}

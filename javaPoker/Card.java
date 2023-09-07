@@ -4,23 +4,23 @@ public class Card
 {
 
 // Card class holds identity of card with values. Will be extended to be included in a deck class to add uniqueness to cards and sort them.
-    String Face;
+    int Face;
     String Suit;
 
 
     public Card()
     {
-        Face= "";
+        Face= 0;
         Suit= "";
     }
 
-    public Card(String f, String s)
+    public Card(int f, String s)
     {
         Face= f;
         Suit= s;
     }
 
-    public String getFace()
+    public int getFace()
     {
         return Face;
     }
@@ -33,7 +33,7 @@ public class Card
     public void printCard()
     {
         
-        switch(Integer.parseInt(Face))
+        switch(Face)
         {
             case 1: System.out.print("A"+Suit+" ");
                     break;
