@@ -13,8 +13,11 @@ public class playTable extends Card
         {
             File test= new File(args[0]);
             Scanner s= new Scanner(test);
-            
-            
+            while(s.hasNextLine())
+            {
+                String temp= s.next()+s.next();
+                
+            }
             Player p1= new Player();
             Player p2= new Player();
             Player p3= new Player();
