@@ -19,6 +19,39 @@ public class Card
         Face= f;
         Suit= s;
     }
+    
+    public Card(String c)
+    {
+        if(c.length()==3)
+        {
+            Face= 10;
+            Suit=""+c.charAt(2);
+        }
+        else
+        {
+            switch(c.charAt(0))
+            {
+                case 'A':   Face= 1;
+                            Suit=""+c.charAt(1);
+                            break;
+                case 'K':   Face=13;
+                            Suit=""+c.charAt(1);
+                            break;
+                case 'Q':   Face=12;
+                            Suit=""+c.charAt(1);
+                            break;
+                case 'J':   Face=11;
+                            Suit=""+c.charAt(1);
+                            break;
+                default :   Face=(int)c.charAt(0);
+                            Suit=""+c.charAt(1);
+                            break;
+            }
+
+        }
+
+
+    }
 
     public int getFace()
     {
