@@ -1,31 +1,64 @@
 import java.util.*;
 import java.io.File;
 import java.util.Scanner;
-
+import java.io.FileNotFoundException;
 public class playTable extends Card
 {
 
 
-    public static void main(String [] args)
+    public static void main(String [] args)throws FileNotFoundException   
     {
-
-        if(args[0]!=Null)
+        
+        if(args.length==1) 
         {
-            File test= new File(args[0]);
-            Scanner s= new Scanner(test);
-            while(s.hasNextLine())
-            {
-                String temp= s.next()+s.next();
+            
+            
+
+                // Check for duplicate cards when scanning file 
+                File test= new File(args[0]);
+                System.out.print(test.canRead());
+                Scanner s= new Scanner(test);
+                s.useDelimiter(", |,|\n");
+            
+           
+                Player[] players= new Player[6];
+                int p=0;
+                int i=0;
+
                 
-            }
-            Player p1= new Player();
-            Player p2= new Player();
-            Player p3= new Player();
-            Player p4= new Player();
-            Player p5= new Player();
-            Player p6= new Player();
+                 while(s.hasNext())
+                 {
+                    System.out.print(s.next());
 
+                    //USE DELIMITER COMMA + \n
 
+                    //System.out.print(s.next());
+                    Card [] pHand= new Card[5];
+                    
+                        while(p<5)
+                        {
+                            
+                            pHand[p]= new Card(s.next());
+                            p++;
+                                                                          
+                        }
+                    
+                    
+                     p=0;
+                     players[i]= new Player(pHand);
+                     i++;
+
+                }
+
+                for( Player a : players)
+                {
+                    a.showHand();
+                }
+                
+                
+                s.close();
+        
+            
         }
         else
         {

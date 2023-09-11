@@ -19,7 +19,24 @@ public class Card
         Face= f;
         Suit= s;
     }
-    
+    public Card(int f, int s)
+    {
+        Face=f;
+        switch(s)
+        {
+            case 1: Suit= "S";
+                    break;
+            case 2: Suit= "H";
+                    break;
+            case 3: Suit= "C";
+                    break;
+            case 4: Suit= "D";
+                    break;
+
+        }
+
+    }
+
     public Card(String c)
     {
         if(c.length()==3)
