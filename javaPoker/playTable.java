@@ -8,7 +8,11 @@ public class playTable
 
     public static void main(String [] args)throws FileNotFoundException   
     {
+        Player tester = new Player(new Card(1,"S"), new Card(10,"S"),new Card(11,"S"), new Card(12,"S"), new Card(13,"S"));
         
+        tester.checkRank();
+        System.out.print(tester.handRank+" -->  ");
+        tester.hRank.get(0).printCard();
         if(args.length==1) 
         {
             
