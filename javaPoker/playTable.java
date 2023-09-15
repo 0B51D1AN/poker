@@ -2,7 +2,7 @@ import java.util.*;
 import java.io.File;
 import java.util.Scanner;
 import java.io.FileNotFoundException;
-public class playTable extends Card
+public class playTable 
 {
 
 

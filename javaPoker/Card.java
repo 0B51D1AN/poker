@@ -21,16 +21,17 @@ public class Card
     }
     public Card(int f, int s)
     {
+        //COMING FROM ARRAY SO INDEX FROM 0
         Face=f;
         switch(s)
         {
-            case 1: Suit= "S";
+            case 0: Suit= "S";
                     break;
-            case 2: Suit= "H";
+            case 1: Suit= "H";
                     break;
-            case 3: Suit= "C";
+            case 2: Suit= "C";
                     break;
-            case 4: Suit= "D";
+            case 3: Suit= "D";
                     break;
 
         }

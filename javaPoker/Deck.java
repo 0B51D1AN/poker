@@ -95,12 +95,8 @@ public class Deck extends Card
 		deck.add(c);
 	}
 
-	// Dont need to Sort rn since deck is organized at initialization
-	public void sort()
-	{
+	
 
-
-	}
 
 
 	//Display remaining cards
