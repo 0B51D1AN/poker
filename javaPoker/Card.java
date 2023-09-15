@@ -61,7 +61,8 @@ public class Card
                 case 'J':   Face=11;
                             Suit=""+c.charAt(1);
                             break;
-                default :   Face=(int)c.charAt(0);
+                default :   Face=c.charAt(0)-'0';
+                            //System.out.println(Face);
                             Suit=""+c.charAt(1);
                             break;
             }

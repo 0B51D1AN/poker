@@ -26,12 +26,21 @@ public class boxofFate extends Player
 
         for(Player p : players)
         {
-            Arrays.fill(theBOX, 0);
+            //Arrays.fill(theBOX, 0);
             
             sendtoTheBOX(p);
             fates.add(findFate()); // Filters through output of minor methods and returns final ranking of player's hand
         }
-        fates.sort(Card.getFace);
+        Collections.sort(fates, new Comparator<Card[]>(){
+        
+            public int compare(Card [] c, Card[] c2)
+            {
+                return Integer.valueOf(c[0].getFace()).compareTo(c2[0].getFace());
+            }
+
+        });
+
+        
 
 
     }
@@ -134,9 +143,9 @@ public class boxofFate extends Player
      }
 
      if((pair==2 && pair2==3) || (pair==3 && pair2==2))
-        return new Card[]{new Card(4,"S"), new Card(mark,"S"),highCard()}; // Full House, low set, high set
+        return new Card[]{new Card(4,"S"), new Card(low,"S"),highCard()}; // Full House, low set, high set
      else if(pair==2 && pair2==2)
-        return new Card[]{new Card(8,"S"), new Card(mark,"S"),highCard()}; // 2 pair, low set, high set
+        return new Card[]{new Card(8,"S"), new Card(low,"S"),highCard()}; // 2 pair, low set, high set
      else if ((pair==2 || pair==3) && pair2<2)
         {
             //must be 3 of a kind or 1 pair
@@ -216,20 +225,45 @@ public class boxofFate extends Player
 
     }
 
+    public Card[] checkStraight()
+    {
+        int count = 0;
+        boolean found=false;
+        for(int i=12; i>=0; i--)
+        {
+            found=false;
+            for(int a=0; a<theBOX.length; a++)
+            {
+                
+                if(theBOX[i][a]==1 && found==false)
+                {
+                    count++;
+                    found=true;
+                }
+
+
+            }
+        }
+            if(count==5)
+                return new Card[]{new Card(6,"S"), highCard()};
+
+        return new Card[]{highCard()};
+
+    }
+
 
     public Card[] findFate()
     {
+        System.out.println(scanV());
+        System.out.println(scanH());
+        System.out.println(checkStraight());
         
         
         return new Card[]{};
 
     }
 
-    public static void main(String [] args)
-    {
 
-    
-    }
 
 
 

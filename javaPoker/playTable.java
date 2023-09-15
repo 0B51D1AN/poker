@@ -12,51 +12,82 @@ public class playTable
         if(args.length==1) 
         {
             
-            
+                ArrayList<String> cardPool= new ArrayList<String>();
+                ArrayList<String> extra= new ArrayList<String>();
 
                 // Check for duplicate cards when scanning file 
                 File test= new File(args[0]);
-                System.out.print(test.canRead());
+                //System.out.print(test.canRead());
                 Scanner s= new Scanner(test);
                 s.useDelimiter(", |,|\n");
             
            
-                Player[] players= new Player[6];
+                Player [] players= new Player[6];
                 int p=0;
                 int i=0;
-
-                
+                Card [] pHand= new Card[5];
+                //Card c= new Card();
                  while(s.hasNext())
                  {
-                    System.out.print(s.next());
+                    //System.out.print(s.next());
 
                     //USE DELIMITER COMMA + \n
 
-                    //System.out.print(s.next());
-                    Card [] pHand= new Card[5];
+                  
+                    //c.printCard();
                     
+
                         while(p<5)
                         {
-                            
-                            pHand[p]= new Card(s.next());
+                            String temp = s.next();
+                            if(cardPool.contains(temp))
+                                extra.add(temp);
+                            else
+                                cardPool.add(temp);
+                            //System.out.println(temp);
+                            pHand[p]= new Card(temp);
                             p++;
                                                                           
                         }
+                    players[i]=new Player(pHand);
+                        // for(Card c : pHand)
+                        // {
+                        //     c.printCard();
+                        // }
+                        // System.out.println();
                     
-                    
-                     p=0;
-                     players[i]= new Player(pHand);
-                     i++;
+
+                    p=0;
+                    i++;
+                   
+                    //  Arrays.fill(pHand, null);
 
                 }
 
-                for( Player a : players)
+
+                if(extra.size()>0)
                 {
-                    a.showHand();
+                    for(Player plr : players)
+                    {
+                        plr.showHand();
+                        System.out.println();
+                    }
+                    System.out.println("ERROR: Duplicate Card(s) Detected\n");
+                    for(String str : extra)
+                    {
+                        System.out.print(" "+str);
+                    }
+                    System.out.println();
                 }
+                // for( Player a : players)
+                // {
+                //     a.showHand();
+                // }
                 
                 
                 s.close();
+                //boxofFate b = new boxofFate();
+                //b.decideFate(players);
         
             
         }
@@ -66,30 +97,38 @@ public class playTable
             Deck deck= new Deck();
             deck.display();
 
-            Player p1= new Player();
-            Player p2= new Player();
-            Player p3= new Player();
-            Player p4= new Player();
-            Player p5= new Player();
-            Player p6= new Player();
+            Player [] game= new Player[] {
+
+            new Player(),
+            new Player(),
+            new Player(),
+            new Player(),
+            new Player(),
+            new Player()
+
+            };
 
             deck.shuffle();
-            deck.deal(p1,p2,p3,p4,p5,p6);
+            deck.deal(game);
+            for(Player p : game)
+            {
+                p.sortHand();
+            }
+            for(Player p: game)
+            {
+                p.showHand();
+                System.out.println();
+            }
 
-            p1.showHand();
-            System.out.println();
-            p2.showHand();
-            System.out.println();
-            p3.showHand();
-            System.out.println();
-            p4.showHand();
-            System.out.println();
-            p5.showHand();
-            System.out.println();
-            p6.showHand();
-            System.out.println();
+            //boxofFate b = new boxofFate();
+            
+            //b.decideFate(game);
+            
 
+            System.out.println("\n\n *** REMAINING CARDS IN DECK ***");
             deck.display();
+
+
         }
             
     }

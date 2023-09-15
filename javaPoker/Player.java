@@ -13,6 +13,7 @@ public class Player
 
     public Player(Card ... cards)
     {
+        hand= new ArrayList<Card>();
         for(Card c : cards)
         {
             hand.add(c);
@@ -43,9 +44,20 @@ public class Player
         hand.removeAll(hand);
     }
     
+    public void sortHand()
+    {
+        Collections.sort(hand, new Comparator<Card>(){
+            public int compare(Card c, Card c2)
+            {
+                return Integer.valueOf(c.getFace()).compareTo(c2.getFace());
+            }
+        });
+
+    }
 
 
 
+ //SEND TO THE JUDGE
    
    
 
