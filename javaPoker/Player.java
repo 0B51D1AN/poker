@@ -66,7 +66,8 @@ public class Player
     {
        
         checkRun();
-        checkSet();
+        if(handRank.equals(""))
+            checkSet();
         
 
 
@@ -89,6 +90,7 @@ public class Player
             {
                 handRank="ROYAL FLUSH";
                 hRank.add(new Card(1,hand.get(0).Suit));
+                return;
             }
 
             boolean straight=true;
@@ -107,17 +109,20 @@ public class Player
             {
                 handRank="STRAIGHT FLUSH";
                 hRank.add(new Card(2, hand.get(0).Suit));
+                return;
             }
             else
             {
                 handRank="Flush";//can have pairs in a flush
                 hRank.add(new Card(5,hand.get(0).Suit));
+                return;
             }
         }
         if(hand.get(0).Face==1 && hand.get(1).Face==10 && hand.get(2).Face==11 && hand.get(3).Face==12 && hand.get(4).Face==13)
             {
-                handRank="ROYAL FLUSH";
-                hRank.add(new Card(1,hand.get(0).Suit));
+                handRank="Straight";
+                hRank.add(new Card(6,"-"));
+                return;
             }
 
             boolean straight=true;
@@ -132,16 +137,85 @@ public class Player
                   straight=false;
                 
             }
+            if(straight)
+            {
+                handRank="Straight";
+                hRank.add(new Card(6,"-"));
+                return;
+            }
     }
 
     public void checkSet()
     {
-        Card set1=hand.get(0);
-        Card set2;
+        int [] faces= new int [13];
+        
         for(Card c : hand)
         {
-           
+            faces[c.Face-1]++;
         }
+        //mini hash of all possible faces
+          
+        int set1=0; // P = pair  T= trio
+        int set2=0;
+        //boolean swap=true;
+        for(int i : faces)
+        {
+            System.out.println(faces[i]);
+        }
+
+        for(int i=0; i<faces.length; i++)
+        {
+            if((faces[i]>=2) && (set1==0))
+            {
+                set1=i; //index of possible pair
+            }
+            if((faces[i]>=2) && (set1>0))
+            {
+                set2=i;
+            }
+            
+        }
+        
+        if(faces[set1]==4)//4 of a kind
+        {
+                
+            handRank= "Four of a Kind";
+            hRank.add(new Card(3,"-"));
+            hRank.add(new Card(set1, "-"));
+            return;
+        }
+        if((faces[set1]==2) && (faces[set2]==2))
+        {
+            handRank="2 Pair";
+            hRank.add(new Card(8,"-"));
+            hRank.add(new Card(set1,"-"));
+            hRank.add(new Card(set2, "-"));
+            return;
+        }
+        if((faces[set1]==3 && faces[set2]==2)||(faces[set2]==3 && faces[set1]==2))
+        {
+            handRank="Full House";
+            hRank.add(new Card(4,"-"));
+            hRank.add(new Card(set1,"-"));
+            hRank.add(new Card(set2,"-"));
+            return;
+        }
+        if(faces[set1]==3)
+        {
+            handRank="3 of a Kind";
+            hRank.add(new Card(7,"-"));
+            hRank.add(new Card(set1,"-"));
+            return;
+        }
+        if(faces[set1]==2)
+        {
+            handRank="Pair";
+            hRank.add(new Card(9,"-"));
+            hRank.add(new Card(set1,"-"));
+            return;
+        }
+
+
 
        //return new Card[]{}; 
 

@@ -8,11 +8,12 @@ public class playTable
 
     public static void main(String [] args)throws FileNotFoundException   
     {
-        Player tester = new Player(new Card(1,"S"), new Card(10,"S"),new Card(11,"S"), new Card(12,"S"), new Card(13,"S"));
+        Player tester = new Player(new Card(2,"C"), new Card(13,"S"),new Card(13,"H"), new Card(7,"S"), new Card(8,"S"));
         
         tester.checkRank();
         System.out.print(tester.handRank+" -->  ");
-        tester.hRank.get(0).printCard();
+        
+        //tester.hRank.get(0).printCard();
         if(args.length==1) 
         {
             
@@ -127,8 +128,18 @@ public class playTable
             //boxofFate b = new boxofFate();
             
             //b.decideFate(game);
-            
+            for(Player p : game)
+            {
+                p.checkRank();
+            }
 
+            for(Player p : game)
+            {
+                System.out.print(p.handRank);
+            }
+
+            
+            
             System.out.println("\n\n *** REMAINING CARDS IN DECK ***");
             deck.display();
 
