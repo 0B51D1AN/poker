@@ -86,13 +86,13 @@ public class playTable
                 for( Player a : players)
                 {
                     a.sortHand();
-                    //a.showHand();
+                    a.showHand();
                     a.checkRank();
 
-                    //System.out.println(a.handRank);
+                    System.out.println(a.handRank);
                 }
                 
-                sortHands(players);
+                //sortHands(players);
 
                 s.close();
                 //boxofFate b = new boxofFate();
@@ -110,7 +110,7 @@ public class playTable
             //Card testCard= new Card("10","H");
             Deck deck= new Deck();
             deck.display();
-
+            System.out.println();
             Player [] game= new Player[] {
 
             new Player(),
@@ -123,35 +123,40 @@ public class playTable
             };
 
             deck.shuffle();
+
             deck.deal(game);
             for(Player p : game)
             {
                 p.sortHand();
             }
-            for(Player p: game)
-            {
-                p.showHand();
-                System.out.println();
-            }
+            // for(Player p: game)
+            // {
+            //     p.showHand();
+            //     System.out.println();
+            // }
 
             //boxofFate b = new boxofFate();
             
             //b.decideFate(game);
             for(Player p : game)
             {
+                
                 p.checkRank();
+                p.showHand();
+                System.out.print("  -  "+p.handRank+"\n");
             }
 
             
-            for(Player p : game)
-            {
-                System.out.print(p.handRank);
-            }
+            // for(Player p : game)
+            // {
+            //     System.out.print(p.handRank);
+            // }
 
 
             
             System.out.println("\n\n *** REMAINING CARDS IN DECK ***");
             deck.display();
+            System.out.println();
 
 
         }
@@ -219,7 +224,7 @@ public class playTable
         }
 
     }
-    //use hRank to do initial sorting
+    //use hRank to do initial sorting just find the winner. Focus on finding only the winning hand.
     public static void sort(int i, ArrayList<Player> p)
     {
         switch(i)
@@ -245,12 +250,12 @@ public class playTable
                     //All straights should now be in sorted order
             
             
-            case 1:             //Straight flush
+            case 1:             //Straight flush 
             
                     
                     return;
             case 2:             //Four of a kind
-            
+                    
             
                     return;
             case 3:             //Full House
@@ -272,13 +277,30 @@ public class playTable
             
                     return;
             case 9:             //High Card
-            
+                    
                     return;
             
 
         }
         //return 0;
     }
+
+
+    public void flush() //multipurpose since we can just examine the highest card for either straight flush or normal flush
+    {
+
+    }
+
+    public void fourOfKind() 
+    {
+
+
+    }
+    public void fullHouse()
+    {
+
+    }
+
 
 
 }
