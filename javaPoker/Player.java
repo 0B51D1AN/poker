@@ -33,6 +33,8 @@ public class Player
         for(Card i : hand)
             i.printCard();
         
+        //System.out.println();
+        
     }
 
     //read hand
@@ -147,31 +149,33 @@ public class Player
 
     public void checkSet()
     {
-        int [] faces= new int [13];
+        int [] faces= new int [14];
         
         for(Card c : hand)
         {
-            faces[c.Face-1]++;
+            faces[c.Face]++;
         }
         //mini hash of all possible faces
           
         int set1=0; // P = pair  T= trio
         int set2=0;
         //boolean swap=true;
-        for(int i : faces)
-        {
-            System.out.println(faces[i]);
-        }
+        // for(int i : faces)
+        // {
+        //     System.out.print(i);
+        // }
 
         for(int i=0; i<faces.length; i++)
         {
             if((faces[i]>=2) && (set1==0))
             {
                 set1=i; //index of possible pair
+                //System.out.println(set1);
             }
-            if((faces[i]>=2) && (set1>0))
+            if((faces[i]>=2) && (set1>0) && (set1!= i))
             {
                 set2=i;
+                //System.out.println(set2);
             }
             
         }
@@ -184,14 +188,6 @@ public class Player
             hRank.add(new Card(set1, "-"));
             return;
         }
-        if((faces[set1]==2) && (faces[set2]==2))
-        {
-            handRank="2 Pair";
-            hRank.add(new Card(8,"-"));
-            hRank.add(new Card(set1,"-"));
-            hRank.add(new Card(set2, "-"));
-            return;
-        }
         if((faces[set1]==3 && faces[set2]==2)||(faces[set2]==3 && faces[set1]==2))
         {
             handRank="Full House";
@@ -199,6 +195,24 @@ public class Player
             hRank.add(new Card(set1,"-"));
             hRank.add(new Card(set2,"-"));
             return;
+        }
+        if(faces[set1]==2)
+        {
+            if(set2>0)
+            {
+                handRank="2 Pair";
+                hRank.add(new Card(8,"-"));
+                hRank.add(new Card(set1,"-"));
+                hRank.add(new Card(set2, "-"));
+                return;
+            }
+            else
+            {
+                handRank="Pair";
+                hRank.add(new Card(9,"-"));
+                hRank.add(new Card(set1,"-"));
+                return;
+            }
         }
         if(faces[set1]==3)
         {
@@ -215,8 +229,16 @@ public class Player
             return;
         }
 
-
-
+        handRank="High Card";
+        hRank.add(new Card(10,"-"));
+        
+        if(hand.get(0).Face!=1)
+            hRank.add(hand.get(4));
+        else
+        {
+            hRank.add(hand.get(0));
+        }
+        return;
        //return new Card[]{}; 
 
     }
