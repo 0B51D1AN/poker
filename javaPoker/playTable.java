@@ -86,13 +86,14 @@ public class playTable
                 for( Player a : players)
                 {
                     a.sortHand();
-                    a.showHand();
+                   // a.showHand();
                     a.checkRank();
 
-                    System.out.println(a.handRank);
+                    //System.out.println(a.handRank);
                 }
                 
-                //sortHands(players);
+                
+                sortHands(players);
 
                 s.close();
                 //boxofFate b = new boxofFate();
@@ -171,7 +172,7 @@ public class playTable
         try
         {
         ArrayList<Player> finalOrder= new ArrayList<Player>();
-        
+        //System.out.println("YESSSS");
         // boolean swapped;
         // int n = players.length;
         // for (int i = 0; i < n - 1; i++) {
@@ -191,28 +192,35 @@ public class playTable
         //     }
         // }
 
-        ArrayList<Player>[] ranks = new ArrayList[10]; 
+        ArrayList<ArrayList<Player>> ranks = new ArrayList<ArrayList<Player>>(10); 
         
         ArrayList<Player>start= new ArrayList<Player>(Arrays.asList(players));
         // Players should now be generally sorted into ranking orders. Now continue filtering through specific rankings to determine the higher if there are multiple of the same rank.
 
+        for(int i=0; i<10; i++)
+        {
+            ranks.add(new ArrayList<Player>());
+            //System.out.println("List "+i+" Added");
+        }
         for(Player p : players)
         {
-            ranks[p.hRank.get(0).Face-1].add(p);
-            
+            //System.out.println(p.hRank.get(0).Face);
+            ranks.get((p.hRank.get(0).Face)-1).add(p);
+            //System.out.println("ADDING");
         }
 
-        for(int i=0; i<ranks.length; i++)
+        for(int i=0; i<ranks.size(); i++)
         {
-            if(ranks[i].size()>1)
+            //System.out.println(ranks.get(i));
+            if(ranks.get(i).size()>1)
             {
-                sort(i, ranks[i]);
+                sort(i, ranks.get(i));
             }
         }
 
-        for(int i=0; i<ranks.length; i++)
+        for(int i=0; i<ranks.size(); i++)
         {
-            for(Player play : ranks[i])
+            for(Player play : ranks.get(i))
             {
                 play.showHand();
                 System.out.print("   -  "+play.handRank+"\n");
@@ -230,74 +238,272 @@ public class playTable
         switch(i)
         {
             case 0:             //Royal straight flush - Sort via "alphabetical order"
-                    Player [] P= new Player[4];
-                    for(Player player : p)
-                    {
-                        String s= player.hRank.get(0).Suit;
-                                                 //Only 4 possible flushes available, we can sort through placing each found suit in the correct order in a temp array
-                        switch(s){ 
-                            case "S":   P[0]=player;
-                            case "H":   P[1]=player;
-                            case "C":   P[2]=player;
-                            case "D":   P[3]=player;
-                        }
-                    }
-                    for(Player play : P)
-                    {
-                        p.add(play);
-                    }
-                    break;
-                    //All straights should now be in sorted order
-            
+                    royalFlush(p);
+                    break;           
             
             case 1:             //Straight flush 
             
-                    
-                    return;
+                    flush(p);
+                    break;
             case 2:             //Four of a kind
                     
-            
-                    return;
+                    fourOfKind(p);
+                    break;
             case 3:             //Full House
-            
-                    return;
+                    fullHouse(p);
+                    break;
             case 4:             //Flush
-            
-                    return;
+                    flush(p);
+                    break;
             case 5:             //Straight
-            
-                    return;
+                    straight(p);
+                    break;
             case 6:             //Three of a Kind
-            
-                    return;
+                    threeOfKind(p);
+                    break;
             case 7:             //Two Pair
-            
-                    return;
+                    twoPair(p);
+                    break;
             case 8:             //Pair
-            
-                    return;
+                    pair(p);
+                    break;
             case 9:             //High Card
-                    
-                    return;
+                    highCard(p);
+                    break;
             
 
         }
-        //return 0;
+        //break 0;
     }
 
-
-    public void flush() //multipurpose since we can just examine the highest card for either straight flush or normal flush
+    public static void royalFlush(ArrayList<Player> p)
     {
+        Player [] ranks= new Player [4];
+        //ArrayList<Player> last= new ArrayList<Player>();
+
+        for(Player Player : p)
+        {
+            String s= Player.hRank.get(0).Suit;
+            switch(s)
+            {
+                case "S":
+
+                            ranks[0]=Player;
+                            break;
+                case "H":
+
+                            ranks[1]=Player;
+                            break;
+                case "C":
+
+                            ranks[2]=Player;
+                            break;
+                case "D":
+                            
+                            ranks[3]=Player;
+                            break;
+
+
+            }
+
+        }
+        p.clear();
+        for(Player play : ranks)
+        {
+            
+            p.add(play);
+            
+            //System.out.println(play.handRank);
+
+        }
+        
+        //p.removeAll();
+        
 
     }
-
-    public void fourOfKind() 
+    public static void flush(ArrayList<Player> p) //multipurpose since we can just examine the highest card for either straight flush or normal flush
     {
+        Collections.sort(p, new Comparator<Player>()
+        {
+                public int compare (Player s1, Player s2)
+                {
+                    return Integer.valueOf(s1.hand.get(4).Face).compareTo(s2.hand.get(4).Face);
+                }
+        });
+        ArrayList<Player> temp = new ArrayList<Player>();
+
+        for(int i=p.size()-1; i>=0; i--)
+        {
+            temp.add(p.get(i));
+        }
+        p.clear();
+        for(Player play : temp)
+        {
+            p.add(play);
+        }
+
+    }
+    public static void fourOfKind(ArrayList<Player> p) 
+    {
+        Collections.sort(p, new Comparator<Player>()
+        {
+                public int compare (Player s1, Player s2)
+                {
+                    return Integer.valueOf(s1.hRank.get(1).Face).compareTo(s2.hRank.get(1).Face);
+                }
+        });
+        
+        ArrayList<Player> temp = new ArrayList<Player>();
+        for(int i=p.size()-1; i>=0; i--)
+        {
+            temp.add(p.get(i));
+        }
+        p.clear();
+        for(Player play : temp)
+        {
+            p.add(play);
+        }
+        
+    }
+    public static void fullHouse(ArrayList<Player> p)
+    {
+        Collections.sort(p, new Comparator<Player>()
+        {
+                public int compare (Player s1, Player s2)
+                {
+                    return Integer.valueOf(s1.hRank.get(2).Face).compareTo(s2.hRank.get(2).Face);
+                }
+        });
+        
+        ArrayList<Player> temp = new ArrayList<Player>();
+        for(int i=p.size()-1; i>=0; i--)
+        {
+            temp.add(p.get(i));
+        }
+        p.clear();
+        for(Player play : temp)
+        {
+            p.add(play);
+        }
 
 
     }
-    public void fullHouse()
+    public static void straight(ArrayList<Player> p)
     {
+        Collections.sort(p, new Comparator<Player>()
+        {
+                public int compare (Player s1, Player s2)
+                {
+                    return Integer.valueOf(s1.hand.get(4).Face).compareTo(s2.hand.get(4).Face);
+                }
+        });
+        ArrayList<Player> temp = new ArrayList<Player>();
+
+        for(int i=p.size()-1; i>=0; i--)
+        {
+            temp.add(p.get(i));
+        }
+        p.clear();
+        for(Player play : temp)
+        {
+            p.add(play);
+        }
+
+
+
+    }
+    public static void threeOfKind(ArrayList<Player> p)
+    {
+        Collections.sort(p, new Comparator<Player>()
+        {
+                public int compare (Player s1, Player s2)
+                {
+                    return Integer.valueOf(s1.hRank.get(1).Face).compareTo(s2.hRank.get(1).Face);
+                }
+        });
+        
+        ArrayList<Player> temp = new ArrayList<Player>();
+        for(int i=p.size()-1; i>=0; i--)
+        {
+            temp.add(p.get(i));
+        }
+        p.clear();
+        for(Player play : temp)
+        {
+            p.add(play);
+        }
+
+
+    }
+    public static void twoPair(ArrayList<Player> p)
+    {
+        Collections.sort(p, new Comparator<Player>()
+        {
+                public int compare (Player s1, Player s2)
+                {
+                    return Integer.valueOf(s1.hRank.get(2).Face).compareTo(s2.hRank.get(2).Face);
+                }
+        });
+        
+        ArrayList<Player> temp = new ArrayList<Player>();
+        for(int i=p.size()-1; i>=0; i--)
+        {
+            temp.add(p.get(i));
+        }
+        p.clear();
+        for(Player play : temp)
+        {
+            p.add(play);
+        }
+
+
+    }
+    public static void pair(ArrayList<Player> p)
+    {
+        Collections.sort(p, new Comparator<Player>()
+        {
+                public int compare (Player s1, Player s2)
+                {
+                    return Integer.valueOf(s1.hRank.get(1).Face).compareTo(s2.hRank.get(1).Face);
+                }
+        });
+        
+        ArrayList<Player> temp = new ArrayList<Player>();
+        for(int i=p.size()-1; i>=0; i--)
+        {
+            temp.add(p.get(i));
+        }
+        p.clear();
+        for(Player play : temp)
+        {
+            p.add(play);
+        }
+
+
+    }
+    public static void highCard(ArrayList<Player> p)
+    {
+        //check for aces
+        //find highest card(s)
+        Collections.sort(p, new Comparator<Player>()
+        {
+                public int compare (Player s1, Player s2)
+                {
+                    return Integer.valueOf(s1.hand.get(4).Face).compareTo(s2.hand.get(4).Face);
+                }
+        });
+        
+        ArrayList<Player> temp = new ArrayList<Player>();
+        for(int i=p.size()-1; i>=0; i--)
+        {
+            temp.add(p.get(i));
+        }
+        p.clear();
+        for(Player play : temp)
+        {
+            p.add(play);
+        }
+
 
     }
 
