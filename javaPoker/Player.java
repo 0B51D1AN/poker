@@ -71,9 +71,7 @@ public class Player
         if(handRank.equals(""))
             checkSet();
         
-
-
-
+        
     }
    
     public void checkRun()
@@ -124,6 +122,7 @@ public class Player
             {
                 handRank="Straight";
                 hRank.add(new Card(6,"-"));
+                hRank.add(hand.get(0));
                 return;
             }
 
@@ -143,6 +142,7 @@ public class Player
             {
                 handRank="Straight";
                 hRank.add(new Card(6,"-"));
+                hRank.add(hand.get(4));
                 return;
             }
     }

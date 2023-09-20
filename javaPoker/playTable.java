@@ -143,8 +143,8 @@ public class playTable
             {
                 
                 p.checkRank();
-                p.showHand();
-                System.out.print("  -  "+p.handRank+"\n");
+                //p.showHand();
+                //System.out.print("  -  "+p.handRank+"\n");
             }
 
             
@@ -153,7 +153,7 @@ public class playTable
             //     System.out.print(p.handRank);
             // }
 
-
+            sortHands(game);
             
             System.out.println("\n\n *** REMAINING CARDS IN DECK ***");
             deck.display();
@@ -172,25 +172,7 @@ public class playTable
         try
         {
         ArrayList<Player> finalOrder= new ArrayList<Player>();
-        //System.out.println("YESSSS");
-        // boolean swapped;
-        // int n = players.length;
-        // for (int i = 0; i < n - 1; i++) {
-        //     swapped = false;
-        //     for (int j = 0; j < n - 1 - i; j++) {
-        //         if (players[j].hRank.get(0).Face > players[j + 1].hRank.get(0).Face) {
-        //             // Swap arr[j] and arr[j + 1]
-        //             Player temp = players[j];
-        //             players[j] = players[j+1];
-        //             players[j+1] = temp;
-        //             swapped = true;
-        //         }
-        //     }
-        //     // If no two elements were swapped in inner loop, the array is already sorted.
-        //     if (!swapped) {
-        //         break;
-        //     }
-        // }
+      
 
         ArrayList<ArrayList<Player>> ranks = new ArrayList<ArrayList<Player>>(10); 
         
@@ -237,37 +219,45 @@ public class playTable
     {
         switch(i)
         {
-            case 0:             //Royal straight flush - Sort via "alphabetical order"
+            case 0:   
+                    System.out.println("FLUSH");          //Royal straight flush - Sort via "alphabetical order"
                     royalFlush(p);
                     break;           
             
             case 1:             //Straight flush 
-            
+                    System.out.println("STRAIGHT FLUSH");
                     flush(p);
                     break;
             case 2:             //Four of a kind
-                    
+                    System.out.println("FOUR OF A KIND");
                     fourOfKind(p);
                     break;
             case 3:             //Full House
+                    System.out.println("FULL HOUSE");
                     fullHouse(p);
                     break;
             case 4:             //Flush
+                    System.out.println("FLUSH");
                     flush(p);
                     break;
             case 5:             //Straight
+                    System.out.println("STRAIGHT");
                     straight(p);
                     break;
             case 6:             //Three of a Kind
+                    System.out.println("THREE OF A KIND");
                     threeOfKind(p);
                     break;
             case 7:             //Two Pair
+                    System.out.println("TWO PAIR");
                     twoPair(p);
                     break;
             case 8:             //Pair
+                    System.out.println("PAIR");
                     pair(p);
                     break;
             case 9:             //High Card
+                    System.out.println("HIGH CARD");
                     highCard(p);
                     break;
             
@@ -336,7 +326,8 @@ public class playTable
         {
             temp.add(p.get(i));
         }
-        p.clear();
+        //checkDouble(temp);
+	p.clear();
         for(Player play : temp)
         {
             p.add(play);
@@ -354,10 +345,21 @@ public class playTable
         });
         
         ArrayList<Player> temp = new ArrayList<Player>();
-        for(int i=p.size()-1; i>=0; i--)
+
+        while(!p.isEmpty())
         {
-            temp.add(p.get(i));
+            	if(p.get(0).hRank.get(1).Face==1)
+                {
+                    temp.add(p.get(0));
+                    p.remove(0);
+                }
+                else    
+                {
+                    temp.add(p.get(p.size()-1));
+                    p.remove(p.size()-1);
+                }
         }
+
         p.clear();
         for(Player play : temp)
         {
@@ -376,10 +378,20 @@ public class playTable
         });
         
         ArrayList<Player> temp = new ArrayList<Player>();
-        for(int i=p.size()-1; i>=0; i--)
+       while(!p.isEmpty())
         {
-            temp.add(p.get(i));
+            	if(p.get(0).hRank.get(1).Face==1)
+                {
+                    temp.add(p.get(0));
+                    p.remove(0);
+                }
+                else    
+                {
+                    temp.add(p.get(p.size()-1));
+                    p.remove(p.size()-1);
+                }
         }
+
         p.clear();
         for(Player play : temp)
         {
@@ -399,10 +411,20 @@ public class playTable
         });
         ArrayList<Player> temp = new ArrayList<Player>();
 
-        for(int i=p.size()-1; i>=0; i--)
+        while(!p.isEmpty())
         {
-            temp.add(p.get(i));
+            	if(p.get(0).hRank.get(1).Face==1)
+                {
+                    temp.add(p.get(0));
+                    p.remove(0);
+                }
+                else    
+                {
+                    temp.add(p.get(p.size()-1));
+                    p.remove(p.size()-1);
+                }
         }
+        //checkDouble(temp);
         p.clear();
         for(Player play : temp)
         {
@@ -423,10 +445,20 @@ public class playTable
         });
         
         ArrayList<Player> temp = new ArrayList<Player>();
-        for(int i=p.size()-1; i>=0; i--)
+        while(!p.isEmpty())
         {
-            temp.add(p.get(i));
+            	if(p.get(0).hRank.get(1).Face==1)
+                {
+                    temp.add(p.get(0));
+                    p.remove(0);
+                }
+                else    
+                {
+                    temp.add(p.get(p.size()-1));
+                    p.remove(p.size()-1);
+                }
         }
+
         p.clear();
         for(Player play : temp)
         {
@@ -446,10 +478,20 @@ public class playTable
         });
         
         ArrayList<Player> temp = new ArrayList<Player>();
-        for(int i=p.size()-1; i>=0; i--)
+        while(!p.isEmpty())
         {
-            temp.add(p.get(i));
+            	if(p.get(0).hRank.get(1).Face==1)
+                {
+                    temp.add(p.get(0));
+                    p.remove(0);
+                }
+                else    
+                {
+                    temp.add(p.get(p.size()-1));
+                    p.remove(p.size()-1);
+                }
         }
+
         p.clear();
         for(Player play : temp)
         {
@@ -469,10 +511,36 @@ public class playTable
         });
         
         ArrayList<Player> temp = new ArrayList<Player>();
-        for(int i=p.size()-1; i>=0; i--)
+        while(!p.isEmpty())
         {
-            temp.add(p.get(i));
+            	if(p.get(0).hRank.get(1).Face==1)
+                {
+                    temp.add(p.get(0));
+                    p.remove(0);
+                }
+                else    
+                {
+                    temp.add(p.get(p.size()-1));
+                    p.remove(p.size()-1);
+                }
         }
+        //ArrayList<Player> tempo = new ArrayList<Player>();
+        // for(int i=1; i<p.size(); i++)
+        // {
+        //     if((p.get(i).hRank.get(1).Face==p.get(i-1).hRank.get(1).Face))
+        //     {
+        //         if(swap(p.get(i-1).hRank.get(1),p.get(i).hRank.get(1)))
+        //         {
+        //             tempo.add(p.get(i-1));
+        //             p.set(i-1,p.get(i));
+        //             p.set(i, temp.get(0));  
+        //             tempo.clear();  
+        //         }
+                
+                
+        //     }
+        // }
+        //checkDouble(temp);
         p.clear();
         for(Player play : temp)
         {
@@ -489,15 +557,28 @@ public class playTable
         {
                 public int compare (Player s1, Player s2)
                 {
-                    return Integer.valueOf(s1.hand.get(4).Face).compareTo(s2.hand.get(4).Face);
+                    return Integer.valueOf(s1.hRank.get(1).Face).compareTo(s2.hRank.get(1).Face);
                 }
         });
         
         ArrayList<Player> temp = new ArrayList<Player>();
-        for(int i=p.size()-1; i>=0; i--)
+        while(!p.isEmpty())
         {
-            temp.add(p.get(i));
+            	if(p.get(0).hand.get(0).Face==1)
+                {
+                    temp.add(p.get(0));
+                    p.remove(0);
+                }
+                else    
+                {
+                    temp.add(p.get(p.size()-1));
+                    p.remove(p.size()-1);
+                }
         }
+
+       checkDouble(temp);
+
+        
         p.clear();
         for(Player play : temp)
         {
@@ -507,6 +588,76 @@ public class playTable
 
     }
 
+	public static void checkDouble(ArrayList<Player> p)
+	{	
+	
+        ArrayList<Player> temp = new ArrayList<Player>();
+        for(int i=1; i<p.size(); i++)
+        {
+            if(((p.get(i).hand.get(0).Face==1) && (p.get(i-1).hand.get(0).Face==1))|| (p.get(i).hand.get(4).Face==p.get(i-1).hand.get(4).Face))
+            {
+                if(swap(p.get(i-1).hRank.get(1),p.get(i).hRank.get(1)))
+                {
+                    temp.add(p.get(i-1));
+                    p.set(i-1,p.get(i));
+                    p.set(i, temp.get(0));  
+                    temp.clear();  
+                }
+                
+                
+            }
+        }
+
+        
+	}	
+
+    public static boolean swap(Card c1, Card c2) //assuming cards input are the same face, there can be no double suit
+    {
+        Card [] ranks= new Card [4];
+        //ArrayList<Player> last= new ArrayList<Player>();
+            switch(c1.Suit)
+            {
+                case "S":
+                            ranks[0]=c1;
+                            break;
+                case "H":
+                            ranks[1]=c1;
+                            break;
+                case "C":
+                            ranks[2]=c1;
+                            break;
+                case "D":        
+                            ranks[3]=c1;
+                            break;
+            }
+            switch(c2.Suit)
+            {
+                case "S":
+                            ranks[0]=c2;
+                            break;
+                case "H":
+                            ranks[1]=c2;
+                            break;
+                case "C":
+                            ranks[2]=c2;
+                            break;
+                case "D":   
+                            ranks[3]=c2;
+                            break;
+            }
+        
+            for(Card c: ranks)
+            {
+                if(c.Suit.equals(c2.Suit))
+                    return true;
+                else
+                    return false;
+            }
+            return true;
+
+        
+
+    }
 
 
 }
