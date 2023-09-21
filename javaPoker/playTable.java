@@ -92,7 +92,7 @@ public class playTable
                     //System.out.println(a.handRank);
                 }
                 
-                
+                System.out.println("*** Winning Order ***");
                 sortHands(players);
 
                 s.close();
@@ -152,7 +152,7 @@ public class playTable
             // {
             //     System.out.print(p.handRank);
             // }
-
+            System.out.println("*** Winning Order ***");
             sortHands(game);
             
             System.out.println("\n\n *** REMAINING CARDS IN DECK ***");
@@ -220,44 +220,44 @@ public class playTable
         switch(i)
         {
             case 0:   
-                    System.out.println("FLUSH");          //Royal straight flush - Sort via "alphabetical order"
+                    //System.out.println("FLUSH");          //Royal straight flush - Sort via "alphabetical order"
                     royalFlush(p);
                     break;           
             
             case 1:             //Straight flush 
-                    System.out.println("STRAIGHT FLUSH");
+                   // System.out.println("STRAIGHT FLUSH");
                     flush(p);
                     break;
             case 2:             //Four of a kind
-                    System.out.println("FOUR OF A KIND");
+                    //System.out.println("FOUR OF A KIND");
                     fourOfKind(p);
                     break;
             case 3:             //Full House
-                    System.out.println("FULL HOUSE");
+                    //System.out.println("FULL HOUSE");
                     fullHouse(p);
                     break;
             case 4:             //Flush
-                    System.out.println("FLUSH");
+                   // System.out.println("FLUSH");
                     flush(p);
                     break;
             case 5:             //Straight
-                    System.out.println("STRAIGHT");
+                   // System.out.println("STRAIGHT");
                     straight(p);
                     break;
             case 6:             //Three of a Kind
-                    System.out.println("THREE OF A KIND");
+                    //System.out.println("THREE OF A KIND");
                     threeOfKind(p);
                     break;
             case 7:             //Two Pair
-                    System.out.println("TWO PAIR");
+                    //System.out.println("TWO PAIR");
                     twoPair(p);
                     break;
             case 8:             //Pair
-                    System.out.println("PAIR");
+                    //System.out.println("PAIR");
                     pair(p);
                     break;
             case 9:             //High Card
-                    System.out.println("HIGH CARD");
+                    //System.out.println("HIGH CARD");
                     highCard(p);
                     break;
             
@@ -430,7 +430,7 @@ public class playTable
         {
             p.add(play);
         }
-
+        checkDouble(temp);
 
 
     }
@@ -540,12 +540,13 @@ public class playTable
                 
         //     }
         // }
-        //checkDouble(temp);
+        
         p.clear();
         for(Player play : temp)
         {
             p.add(play);
         }
+        checkDouble(p);
 
 
     }
@@ -576,7 +577,7 @@ public class playTable
                 }
         }
 
-       checkDouble(temp);
+      
 
         
         p.clear();
@@ -584,7 +585,7 @@ public class playTable
         {
             p.add(play);
         }
-
+         checkDouble(p);
 
     }
 
@@ -594,8 +595,9 @@ public class playTable
         ArrayList<Player> temp = new ArrayList<Player>();
         for(int i=1; i<p.size(); i++)
         {
-            if(((p.get(i).hand.get(0).Face==1) && (p.get(i-1).hand.get(0).Face==1))|| (p.get(i).hand.get(4).Face==p.get(i-1).hand.get(4).Face))
+            if(p.get(i).hRank.get(1).Face == p.get(i-1).hRank.get(1).Face)
             {
+                //System.out.println("true");
                 if(swap(p.get(i-1).hRank.get(1),p.get(i).hRank.get(1)))
                 {
                     temp.add(p.get(i-1));
@@ -615,45 +617,43 @@ public class playTable
     {
         Card [] ranks= new Card [4];
         //ArrayList<Player> last= new ArrayList<Player>();
-            switch(c1.Suit)
+        String s1= c1.Suit;
+        String s2= c2.Suit;
+        int c1Weight=0;
+        int c2Weight=0;
+        //System.out.println("Yes");
+            switch(s1)
             {
                 case "S":
-                            ranks[0]=c1;
+                            c1Weight=4;
                             break;
                 case "H":
-                            ranks[1]=c1;
+                            c1Weight=3;
                             break;
                 case "C":
-                            ranks[2]=c1;
+                            c1Weight=2;
                             break;
                 case "D":        
-                            ranks[3]=c1;
+                            c1Weight=1;
                             break;
             }
-            switch(c2.Suit)
+            switch(s2)
             {
                 case "S":
-                            ranks[0]=c2;
+                            c2Weight=4;
                             break;
                 case "H":
-                            ranks[1]=c2;
+                            c2Weight=3;
                             break;
                 case "C":
-                            ranks[2]=c2;
+                            c2Weight=2;
                             break;
                 case "D":   
-                            ranks[3]=c2;
+                            c2Weight=1;
                             break;
             }
         
-            for(Card c: ranks)
-            {
-                if(c.Suit.equals(c2.Suit))
-                    return true;
-                else
-                    return false;
-            }
-            return true;
+            return (c2Weight>c1Weight);
 
         
 
