@@ -204,6 +204,11 @@ public class Player
                 hRank.add(new Card(8,"-"));
                 hRank.add(new Card(set1,"-"));
                 hRank.add(new Card(set2, "-"));
+                for(Card c : hand)
+                {
+                    if(c.Face!=set1 && c.Face!= set2)
+                        hRank.add(c);
+                }
                 return;
             }
             else
@@ -211,6 +216,15 @@ public class Player
                 handRank="Pair";
                 hRank.add(new Card(9,"-"));
                 hRank.add(new Card(set1,"-"));
+                if(set1==hand.get(4).Face)
+                {
+                    if(hand.get(0).Face!=1)
+                        hRank.add(hand.get(2));
+                    else
+                        hRank.add(hand.get(0));
+                }
+                else
+                    hRank.add(hand.get(4));
                 return;
             }
         }

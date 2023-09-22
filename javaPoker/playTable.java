@@ -332,6 +332,7 @@ public class playTable
         {
             p.add(play);
         }
+        checkDouble(p, 2);
 
     }
     public static void fourOfKind(ArrayList<Player> p) 
@@ -430,7 +431,7 @@ public class playTable
         {
             p.add(play);
         }
-        checkDouble(temp);
+        checkDouble(temp, 5);
 
 
     }
@@ -495,9 +496,9 @@ public class playTable
         p.clear();
         for(Player play : temp)
         {
-            p.add(play);
+            p.add(play); 
         }
-
+        checkDouble(p, 1);
 
     }
     public static void pair(ArrayList<Player> p)
@@ -524,29 +525,14 @@ public class playTable
                     p.remove(p.size()-1);
                 }
         }
-        //ArrayList<Player> tempo = new ArrayList<Player>();
-        // for(int i=1; i<p.size(); i++)
-        // {
-        //     if((p.get(i).hRank.get(1).Face==p.get(i-1).hRank.get(1).Face))
-        //     {
-        //         if(swap(p.get(i-1).hRank.get(1),p.get(i).hRank.get(1)))
-        //         {
-        //             tempo.add(p.get(i-1));
-        //             p.set(i-1,p.get(i));
-        //             p.set(i, temp.get(0));  
-        //             tempo.clear();  
-        //         }
-                
-                
-        //     }
-        // }
+        
         
         p.clear();
         for(Player play : temp)
         {
             p.add(play);
         }
-        checkDouble(p);
+        checkDouble(p,4);
 
 
     }
@@ -585,31 +571,112 @@ public class playTable
         {
             p.add(play);
         }
-         checkDouble(p);
+         checkDouble(p,5);
 
     }
 
-	public static void checkDouble(ArrayList<Player> p)
+	public static void checkDouble(ArrayList<Player> p, int index)
 	{	
-	
         ArrayList<Player> temp = new ArrayList<Player>();
-        for(int i=1; i<p.size(); i++)
+        switch(index)
         {
-            if(p.get(i).hRank.get(1).Face == p.get(i-1).hRank.get(1).Face)
-            {
-                //System.out.println("true");
-                if(swap(p.get(i-1).hRank.get(1),p.get(i).hRank.get(1)))
+            case 5: 
+                
+                for(int i=1; i<p.size(); i++)
                 {
-                    temp.add(p.get(i-1));
-                    p.set(i-1,p.get(i));
-                    p.set(i, temp.get(0));  
-                    temp.clear();  
+                    if(p.get(i).hRank.get(1).Face == p.get(i-1).hRank.get(1).Face)
+                    {
+                        //System.out.println("true");
+                        if(swap(p.get(i-1).hRank.get(1),p.get(i).hRank.get(1)))
+                        {
+                            temp.add(p.get(i-1));
+                            p.set(i-1,p.get(i));
+                            p.set(i, temp.get(0));  
+                            temp.clear();  
+                        }
+                        
+                        
+                    }
                 }
-                
-                
-            }
-        }
+                break;
 
+
+            case 4:
+                for(int i=1; i<p.size(); i++)
+                {
+                    if(p.get(i).hRank.get(1).Face == p.get(i-1).hRank.get(1).Face)
+                    {
+                        //System.out.println("true");
+                        if(swap(p.get(i-1).hRank.get(2),p.get(i).hRank.get(2)))
+                        {
+                            temp.add(p.get(i-1));
+                            p.set(i-1,p.get(i));
+                            p.set(i, temp.get(0));  
+                            temp.clear();  
+                        }
+                        
+                        
+                    }
+                }
+                break;
+                
+            
+            case 3:
+                for(int i=1; i<p.size(); i++)
+                {
+                    if((p.get(i).hRank.get(1).Face == p.get(i-1).hRank.get(1).Face) && (p.get(i).hRank.get(2).Face == p.get(i-1).hRank.get(2).Face))
+                    {
+                        //System.out.println("true");
+                        
+                        if(swap(p.get(i-1).hRank.get(3),p.get(i).hRank.get(3)))
+                        {
+                            temp.add(p.get(i-1));
+                            p.set(i-1,p.get(i));
+                            p.set(i, temp.get(0));  
+                            temp.clear();  
+                        }
+                        
+                        
+                    }
+                }
+                break;
+            case 2:  // flush
+            for(int i=1; i<p.size(); i++)
+                {
+                                        
+                        //System.out.println("true");  
+                    for(int a=1; a<p.size(); a++)
+                    {
+                        if(swap(p.get(a-1).hRank.get(0),p.get(a).hRank.get(0)))
+                        {
+                            temp.add(p.get(a-1));
+                            p.set(a-1,p.get(a));
+                            p.set(a, temp.get(0));  
+                            temp.clear();  
+                        }
+                    }   
+                        
+                    
+                }
+                break;
+            case 1:  //2pair
+            for(int i=1; i<p.size(); i++)
+                {
+                    if((p.get(i).hRank.get(1).Face == p.get(i-1).hRank.get(1).Face) && (p.get(i).hRank.get(2).Face == p.get(i-1).hRank.get(2).Face))
+                    {
+                        //System.out.println("true");
+                        if(swap(p.get(i-1).hRank.get(3),p.get(3).hRank.get(1)))
+                        {
+                            temp.add(p.get(i-1));
+                            p.set(i-1,p.get(i));
+                            p.set(i, temp.get(0));  
+                            temp.clear();  
+                        }
+                                                
+                    }
+                }
+                break;
+        }   
         
 	}	
 
