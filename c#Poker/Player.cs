@@ -54,15 +54,32 @@ namespace Poker
 
         public void findRank()
         {
+            sortHand();
+
+            checkStraight();
+            if(handRank.Equals(""))
+                checkSet();
             
+
         }
 
         public void sortHand()
         {
             hand.Sort((left,right)=> left.Face.CompareTo(right.Face));
         }
-
         
+
+        public void checkStraight()
+        {
+            
+        }
+
+        public void checkSet()
+        {
+
+
+        }
+
 
     }
 
