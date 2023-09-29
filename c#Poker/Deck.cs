@@ -35,17 +35,26 @@ namespace Poker
 
             }		
 
-            Console.WriteLine("Deck has been initialized and sorted");
+            //Console.WriteLine("Deck has been initialized and sorted");
         }
 
 
         public void printDeck()
         {
+            int format=0;
             foreach(Card c in deck)
             {
+                format++;
                 c.printCard();
                 Console.Write(" ");
+                if(format==13)
+                {
+                    Console.WriteLine();
+                    format=0;
+                }
+                
             }
+            Console.WriteLine();
         }
 
         public Card popCard()
@@ -73,12 +82,12 @@ namespace Poker
 
             while(temp.Count!=0)
             {
-                temp[0].printCard();
-                Console.Write(" ");
+                //temp[0].printCard();
+                //Console.Write(" ");
                 deck.Add(temp[0]);
                 temp.RemoveAt(0);
             }
-            Console.WriteLine();
+            //Console.WriteLine();
 
 
        } 

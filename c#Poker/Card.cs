@@ -5,8 +5,8 @@ namespace Poker
 {
     class Card
     {
-        int Face;
-        int Suit; // 1= Spades 2= Hearts 3= Clubs 4= Diamonds
+        public int Face;
+        public int Suit; // 1= Spades 2= Hearts 3= Clubs 4= Diamonds
 
         public Card() // Default
         {
@@ -60,6 +60,11 @@ namespace Poker
         }
 
 
+        // public bool Equals(Card other)
+        // {
+        //     return (other.Face==this.Face && other.Suit==this.Suit);
+
+        // }
         public void printCard() // Convert to correct output format from integer interpretation
         {
             
