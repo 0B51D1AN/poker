@@ -61,16 +61,15 @@ namespace Poker
                 Console.WriteLine("\nHere is what remains in the deck:");
                 d.printDeck();
 
-                Console.WriteLine("Testing Sort");
-                foreach(Player p in table)
-                {
-                    p.sortHand();
-                    p.showHand();
-                }
+                
+                Console.WriteLine("\n *** WINNING HAND ORDER ***");
 
-                //Console.WriteLine("\n *** WINNING HAND ORDER ***");
-
-                //printWinners(table);
+                // foreach(Player p in table)
+                // {
+                //     p.findRank();
+                //     p.showHand();
+                // }
+                printWinners(table);
                 //insert array of Players into Decider to order the hands.
                 //First, use the Player class to decide the rank of the individual hands
                 //Then, use the playTable functions to decide the winner and tiebreak
@@ -91,15 +90,27 @@ namespace Poker
 
         public static void printWinners(Player [] p)
         {
-            List<List<Player>> table= new List<List<Player>>(10);
+            List<List<Player>> table= new List<List<Player>>();
             foreach(Player player in p)
             {
-                table[player.Rank-1].Add(player);             
+                try
+                {
+                    Console.WriteLine("Bru");
+                    player.findRank();
+                    Console.WriteLine("Found Rank");
+                    table[player.Rank-1].Add(player); 
+                    Console.WriteLine("Adding player");    
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }        
             }
 
             for(int i=0; i<table.Count; i++)
             {
-                if(table[i].Count<1)
+                Console.WriteLine("Bru");
+                if(table[i].Count>1)
                     tieBreak(table[i], i);
             }
 
@@ -119,6 +130,7 @@ namespace Poker
 
         public static void tieBreak(List<Player> p, int index)
         {
+            Console.WriteLine("SWITCH");
             switch(index)
             {
                 case 0: //RoyalStraightFlush
@@ -163,11 +175,19 @@ namespace Poker
         }
         public static void fourofaKind(List<Player> p)
         {
-
+            p.Sort((left,right)=> left.hRank[1].Face.CompareTo(right.hRank[1].Face));
+            if(p[0].hand[0].Face==1)
+                p.Reverse(1,4);//reversal should not need comparator since they are already sorted
+            else
+                p.Reverse();
         }
         public static void straight(List<Player> p)
         {
-
+            p.Sort((left,right)=> left.hRank[1].Face.CompareTo(right.hRank[1].Face));
+            if(p[0].hand[0].Face==1)
+                p.Reverse(1,4);//reversal should not need comparator since they are already sorted
+            else
+                p.Reverse();
         }
         public static void twoPair(List<Player> p)
         {
@@ -175,11 +195,20 @@ namespace Poker
         }
         public static void pair(List<Player> p)
         {
-            
+            p.Sort((left,right)=> left.hRank[1].Face.CompareTo(right.hRank[1].Face));
+            int index=0;
+            while(p[index].hand[0].Face==1)
+                index++;
+            p.Reverse();
         }
         public static void highCard(List<Player> p)
         {
-            
+            p.Sort((left,right)=> left.hRank[1].Face.CompareTo(right.hRank[1].Face));
+            int index=0;
+            while(p[index].hand[0].Face==1)
+                index++;
+            p.Reverse(index,4);
+
         }
 
 
