@@ -15,27 +15,97 @@ namespace Poker
            // p.showHand();
             //Console.WriteLine(args.Length);
                 
-                if(args.Length==1)
-                {
+            if(args.Length==1)
+            {
 
-                    
-                    
-                    try
+                
+                
+                try
+                {
+                    using (StreamReader s= new StreamReader(args[0]))
                     {
-                        using (StreamReader s= new StreamReader(args[0]))
+                        Console.WriteLine("Reading file: "+args[0]);
+                        
+                        List<Card> cardPool= new List<Card>();
+                        List<Card> tempHand= new List<Card>();
+                        List<Player> table= new List<Player>();
+                        List<Card> duplicate= new List<Card>();
+                        int newHand=0;
+                        
+                        Card t;
+                        while(!s.EndOfStream)
                         {
-                            Console.WriteLine(s.ReadToEnd());
+                            try
+                            {
+                                string temp=null;
+                                while((s.Peek()!=',') && (s.Peek()!=' ') && (s.Peek()!='\n'))
+                                {
+                                    temp+=(char)s.Read();
+                                    //Console.WriteLine(temp);
+                                }
+                                s.Read();
+                                t=new Card(temp);
+                                //temp="";
+                                //Console.Write(newHand);
+                                
+                                if(cardPool.Contains(t))
+                                {
+                                    
+                                    duplicate.Add(t);
+                                    tempHand.Add(t);
+                                    newHand++;
+                                }
+                                else
+                                {
+                                    
+                                    cardPool.Add(t);
+                                    
+                                    tempHand.Add(t);
+                                    
+                                    newHand++;
+                                }
+                                if(newHand==5)
+                                {
+                                    
+                                    table.Add(new Player(tempHand.ToArray()));
+                                    //table[0].showHand();
+                                    tempHand.Clear();
+                                    newHand=0;
+                                }
+                                
+                            }
+                            catch(Exception e){}
+
+                            
+                        }
+                        Console.WriteLine("Here are the Hands: ");
+                        foreach(Player p in table)
+                        {
+                            p.showHand();
+                        }
+
+                        if(duplicate.Count>0)
+                        {
+                            Console.WriteLine("ERROR: Duplicate Card(s) detected");
+                            foreach(Card c in duplicate)
+                            {
+                                c.printCard();
+                                Console.Write(" ");
+                            }
 
                         }
-                    }
-                    catch (IOException e)
-                    {
-                        Console.WriteLine("The file could not be read:");
-                        Console.WriteLine(e.Message);
+                        
+
                     }
                 }
+                catch (IOException e)
+                {
+                    Console.WriteLine("The file could not be read:");
+                    Console.WriteLine(e.Message);
+                }
+            }
 
-            
+        
             else
             {
 
@@ -57,6 +127,7 @@ namespace Poker
                 foreach(Player p in table)
                 {
                     p.showHand();
+                    p.findRank();
                 }
                 Console.WriteLine("\nHere is what remains in the deck:");
                 d.printDeck();
@@ -90,16 +161,20 @@ namespace Poker
 
         public static void printWinners(Player [] p)
         {
-            List<List<Player>> table= new List<List<Player>>();
+            List<Player> [] table= new List<Player>[10];
+            for(int i=0; i<table.Length; i++)
+            {
+                table[i]=new List<Player>();
+            }
             foreach(Player player in p)
             {
                 try
                 {
-                    Console.WriteLine("Bru");
-                    player.findRank();
-                    Console.WriteLine("Found Rank");
+                    //Console.WriteLine("Bru");
+                    //player.findRank();
+                    //Console.WriteLine("Found Rank");
                     table[player.Rank-1].Add(player); 
-                    Console.WriteLine("Adding player");    
+                    //Console.WriteLine("Adding player");    
                 }
                 catch(Exception e)
                 {
@@ -107,9 +182,9 @@ namespace Poker
                 }        
             }
 
-            for(int i=0; i<table.Count; i++)
+            for(int i=0; i<table.Length-1; i++)
             {
-                Console.WriteLine("Bru");
+                //Console.WriteLine("Bru");
                 if(table[i].Count>1)
                     tieBreak(table[i], i);
             }
@@ -117,7 +192,7 @@ namespace Poker
 
             
             //use tieBreak inside here to decide individually the winner of each tied set
-            for(int i=0; i<table.Count; i++)
+            for(int i=0; i<table.Length; i++)
             {
                 foreach(Player play in table[i])
                 {
@@ -130,7 +205,7 @@ namespace Poker
 
         public static void tieBreak(List<Player> p, int index)
         {
-            Console.WriteLine("SWITCH");
+            //Console.WriteLine("SWITCH");
             switch(index)
             {
                 case 0: //RoyalStraightFlush
@@ -176,18 +251,17 @@ namespace Poker
         public static void fourofaKind(List<Player> p)
         {
             p.Sort((left,right)=> left.hRank[1].Face.CompareTo(right.hRank[1].Face));
-            if(p[0].hand[0].Face==1)
-                p.Reverse(1,4);//reversal should not need comparator since they are already sorted
-            else
-                p.Reverse();
+            int index=0;
+            while(p[index].hand[0].Face==1)
+                index++;
+            if(index>p.Count-1)
+                p.Reverse(index,p.Count-1);
+            
         }
         public static void straight(List<Player> p)
         {
             p.Sort((left,right)=> left.hRank[1].Face.CompareTo(right.hRank[1].Face));
-            if(p[0].hand[0].Face==1)
-                p.Reverse(1,4);//reversal should not need comparator since they are already sorted
-            else
-                p.Reverse();
+            
         }
         public static void twoPair(List<Player> p)
         {
@@ -197,9 +271,14 @@ namespace Poker
         {
             p.Sort((left,right)=> left.hRank[1].Face.CompareTo(right.hRank[1].Face));
             int index=0;
-            while(p[index].hand[0].Face==1)
+            while(p[index].hRank[1].Face==1)
                 index++;
-            p.Reverse();
+            if(index>p.Count-1)
+                p.Reverse(index, p.Count-1);
+            else
+                p.Reverse();
+            
+            //p.Reverse();
         }
         public static void highCard(List<Player> p)
         {
@@ -207,7 +286,11 @@ namespace Poker
             int index=0;
             while(p[index].hand[0].Face==1)
                 index++;
-            p.Reverse(index,4);
+            if(index>p.Count-1)
+                p.Reverse(index,p.Count-1);
+                          
+            
+            //p.Reverse(index,p.Count-1);
 
         }
 

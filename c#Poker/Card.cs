@@ -22,10 +22,8 @@ namespace Poker
 
         public Card(String c) // String Parse | String input should be in 2 character format -> FaceSuit
         {
-            char F=c[0];
-            char S=c[1];
-
-            switch(F)
+        
+            switch(c[0])
             {
                 case 'A':
                     Face=1;
@@ -39,9 +37,15 @@ namespace Poker
                 case 'J':
                     Face=11;
                     break;
+                case '1':
+                    Face=10;
+                    break;
+                default:
+                    Face= (int) c[0]-48;
+                    break;
             }
 
-            switch(S)
+            switch(c[c.Length-1])
             {
                 case 'S':
                     Suit=1;
@@ -57,14 +61,28 @@ namespace Poker
                     break;
             }
 
+
         }
 
 
-        // public bool Equals(Card other)
+        // public override bool Equals(object other)
         // {
-        //     return (other.Face==this.Face && other.Suit==this.Suit);
-
+        //     if(other==null)
+        //         return false;
+        //     Card otherAsCard= other as Card;
+        //     if (otherAsCard == null)
+        //         return false;
+        //     else
+        //         return Equals(otherAsCard);
         // }
+
+        public bool Equals(Card other)
+        {
+            if(other==null)
+                return false;
+            else
+                return ((other.Face==this.Face) && (other.Suit==this.Suit));
+        }
         public void printCard() // Convert to correct output format from integer interpretation
         {
             
