@@ -17,9 +17,7 @@ namespace Poker
                 
             if(args.Length==1)
             {
-
-                
-                
+               
                 try
                 {
                     using (StreamReader s= new StreamReader(args[0]))
@@ -40,29 +38,37 @@ namespace Poker
                                 string temp=null;
                                 while((s.Peek()!=',') && (s.Peek()!=' ') && (s.Peek()!='\n'))
                                 {
+                                    //Console.WriteLine("Yo");
                                     temp+=(char)s.Read();
-                                    //Console.WriteLine(temp);
+                                   // Console.WriteLine(temp);
                                 }
-                                s.Read();
+                                
+
+
                                 t=new Card(temp);
+                                //Console.WriteLine("Card added");
                                 //temp="";
                                 //Console.Write(newHand);
-                                
-                                if(cardPool.Contains(t))
+                                //bool dup=false;
+                                foreach(Card c in cardPool)
                                 {
-                                    duplicate.Add(t);
-                                    tempHand.Add(t);
-                                    newHand++;
+                                    if(t.Face==c.Face && t.Suit==c.Suit)
+                                    {
+                                        duplicate.Add(t);
+                                    }
                                 }
-                                else
-                                {
+
+
+                                
+                                
                                     
                                     cardPool.Add(t);
                                     
                                     tempHand.Add(t);
                                     
                                     newHand++;
-                                }
+                                    //Console.WriteLine(newHand);
+                                
                                 if(newHand==5)
                                 {
                                     
@@ -71,9 +77,13 @@ namespace Poker
                                     tempHand.Clear();
                                     newHand=0;
                                 }
-                                
+                                while(s.Peek()==' ' || s.Peek()==',' || s.Peek()=='\n')
+                                    s.Read();
+
                             }
-                            catch(Exception e){}
+                            catch(Exception e){
+                                Console.WriteLine(e.Message);
+                            }
 
                             
                         }
@@ -86,12 +96,13 @@ namespace Poker
 
                         if(duplicate.Count>0)
                         {
-                            Console.WriteLine("ERROR: Duplicate Card(s) detected");
+                            Console.WriteLine("\nERROR: Duplicate Card(s) detected\n");
                             foreach(Card c in duplicate)
                             {
                                 c.printCard();
                                 Console.Write(" ");
                             }
+                            Console.WriteLine('\n');
 
                         }
                         else
@@ -272,10 +283,14 @@ namespace Poker
             foreach(Player play in p)
             {
                     if(play.hRank[1].Face==1)
-                    play.hRank[1].Face=14;
+                        play.hRank[1].Face=14;
             }
-            p.Sort((left,right)=> left.hRank[1].Face.CompareTo(right.hRank[1].Face));
-            p.Reverse();
+             
+             p.Sort((left,right)=> left.hRank[1].Face.CompareTo(right.hRank[1].Face));
+             p.Reverse();
+             p.Sort((left,right)=> left.hRank[0].Suit.CompareTo(right.hRank[0].Suit));
+             
+
         }
         
         public static void straight(List<Player> p)

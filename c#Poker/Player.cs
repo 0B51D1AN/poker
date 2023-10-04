@@ -117,6 +117,10 @@ namespace Poker
                 {
                     handRank="STRAIGHT FLUSH";
                     hRank.Add(new Card(2, hand[0].Suit));
+                    if(hand[0].Face==1)
+                        hRank.Add(hand[0]);
+                    else
+                        hRank.Add(hand[4]);
                     Rank=2;
                     return;
                 }
@@ -125,9 +129,9 @@ namespace Poker
                     handRank="Flush";
                     hRank.Add(new Card(5, hand[0].Suit));
                     if(hand[0].Face==1)
-                        hand.Add(hand[0]);
+                        hRank.Add(hand[0]);
                     else
-                        hand.Add(hand[4]);
+                        hRank.Add(hand[4]);
                     Rank=5;
                     return;
                 }
