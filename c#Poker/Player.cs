@@ -124,6 +124,10 @@ namespace Poker
                 {
                     handRank="Flush";
                     hRank.Add(new Card(5, hand[0].Suit));
+                    if(hand[0].Face==1)
+                        hand.Add(hand[0]);
+                    else
+                        hand.Add(hand[4]);
                     Rank=5;
                     return;
                 }
@@ -181,13 +185,11 @@ namespace Poker
             {
                 if((faces[i]>=2) && (set1==0))
                 {
-                    set1=i; //index of possible pair
-                    
+                    set1=i; //index of possible pair                    
                 }
                 if((faces[i]>=2) && (set1>0) && (set1!= i))
                 {
-                    set2=i;
-                    
+                    set2=i;                    
                 }
             
             }
@@ -259,6 +261,17 @@ namespace Poker
                 handRank="Pair";
                 hRank.Add(new Card(9,-1));
                 hRank.Add(new Card(set1,-1));
+                if(set1==hand[4].Face)
+                {
+                    if(hand[0].Face!=1)
+                        hRank.Add(hand[2]);
+                    else
+                        hRank.Add(hand[0]);
+                }
+                else
+                    hRank.Add(hand[4]);
+                    
+
                 Rank=9;
                 return;
             }

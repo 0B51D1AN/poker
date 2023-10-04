@@ -100,6 +100,9 @@ namespace Poker
                 case 11:
                     Console.Write("J");
                     break;
+                case 14:
+                    Console.Write("A");
+                    break;
                 default:
                     Console.Write(Face);
                     break;
