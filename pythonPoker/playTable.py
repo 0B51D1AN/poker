@@ -82,7 +82,9 @@ class Player:
         self.organize_hand_by_face()
 
         # Check for different hand rankings in decreasing order of importance
-        if self.is_straight_flush():
+        if self.is_straight_flush() and self.hand[0][1] == 10:
+            self.handRank= "Royal Flush"
+        elif self.is_straight_flush():
             self.handRank = "Straight Flush"
         elif self.is_four_of_a_kind():
             self.handRank = "Four of a Kind"
@@ -163,7 +165,8 @@ class Player:
         return False
 
 
-    
+
+
 
 
 def read_hands_from_csv(file_path):
@@ -227,8 +230,8 @@ if __name__ == "__main__":
 
         players.sort(key=lambda player: hand_rank_values.get(player.handRank, 0), reverse=True)
 
-        for i in players:
-            i.show_hand()
+        
+            
         
         
 
@@ -280,12 +283,21 @@ if __name__ == "__main__":
         "High Card": 1,
     }
 
-        table.sort(key=lambda player: hand_rank_values.get(player.handRank, 0), reverse=True)
-        for i in table:
-            i.show_hand()
 
-        
-        
+        royalFlush=[]
+        straightFlush=[]
+        fourofaKind=[]
+        fullHouse=[]
+        flush=[]
+        straight=[]
+        threeofaKind=[]
+        twoPair=[]
+        pair=[]
+        highCard=[]
+    
 
-            
+    
+
+
+                
         
