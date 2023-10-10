@@ -184,7 +184,102 @@ def read_hands_from_csv(file_path):
             hands.append(hand)
     return hands
 
+def tie_break(players, index):
+    if index == 0:  # RoyalStraightFlush
+        players.sort(key=lambda player: player.hand[4][0])  # Sort by suit
+    elif index == 1:  # StraightFlush
+        flush(players)
+    elif index == 2:  # FourofaKind
+        for player in players:
+            if player.hand[1][1] == 1:
+                player.hand[1][1] = 14
+        players.sort(key=lambda player: player.hand[1][1], reverse=True)
+    elif index == 3:  # FullHouse
+        players.sort(key=lambda player: player.hand[2][1], reverse=True)
+    elif index == 4:  # Flush
+        flush(players)
+    elif index == 5:  # Straight
+        straight(players)
+    elif index == 6:  # ThreeofaKind
+        for player in players:
+            if player.hand[1][1] == 1:
+                player.hand[1][1] = 14
+        players.sort(key=lambda player: player.hand[1][1], reverse=True)
+    elif index == 7:  # TwoPair
+        two_pair(players)
+    elif index == 8:  # Pair
+        pair(players)
+    elif index == 9:  # HighCard
+        high_card(players)
 
+
+def flush(players):
+    for player in players:
+        if player.hand[1][1] == 1:
+            player.hand[1][1] = 14
+
+    players.sort(key=lambda player: player.hand[1][1], reverse=True)
+    players.sort(key=lambda player: player.hand[0][0])
+
+
+def straight(players):
+    for player in players:
+        if player.hand[1][1] == 1:
+            player.hand[1][1] = 14
+    players.sort(key=lambda player: player.hand[1][1], reverse=True)
+
+
+def two_pair(players):
+    players.sort(key=lambda player: player.hand[2][1])
+    index = 0
+    while players[index].hand[2][1] == 1:
+        index += 1
+    if index > len(players) - 1:
+        players.reverse()
+    else:
+        players.reverse()
+
+
+def pair(players):
+    for player in players:
+        if player.hand[1][1] == 1:
+            player.hand[1][1] = 14
+
+    players.sort(key=lambda player: player.hand[1][1])
+    players.reverse()
+    n = len(players)
+    swapped = False
+
+    for i in range(n - 1):
+        swapped = False
+
+        for j in range(n - 1 - i):
+            if players[j].hand[1][1] == players[j + 1].hand[1][1]:
+                if players[j].hand[2][1] < players[j + 1].hand[2][1]:
+                    players[j], players[j + 1] = players[j + 1], players[j]
+                swapped = True
+
+        if not swapped:
+            break
+
+
+def high_card(players):
+    for player in players:
+       if player.hand[1][1] == 1:
+          player.hand[1][1] = 14
+    players= max(self.hand, key=lambda card: card[4])
+    #players.sort(key=lambda player: player.hand[1][1])
+    #players.reverse()
+
+    
+    
+
+
+def rank_index(rank_name):
+    for rank_tuple in hand_rank_values:
+        if rank_tuple[0] == rank_name:
+            return rank_tuple[1]
+    return -1  # Default to 0 if the rank name is not found in the list
 
 if __name__ == "__main__":
     # Create a deck, shuffle it, and deal some cards
@@ -215,22 +310,38 @@ if __name__ == "__main__":
 
         print("\nHands in Winning order: ")
 
-        hand_rank_values = {
-        "Royal Flush": 10,
-        "Straight Flush": 9,
-        "Four of a Kind": 8,
-        "Full House": 7,
-        "Flush": 6,
-        "Straight": 5,
-        "Three of a Kind": 4,
-        "Two Pair": 3,
-        "Pair": 2,
-        "High Card": 1,
-    }
+       #players.sort(key=lambda player: hand_rank_values.get(player.handRank, 0), reverse=True)
 
-        players.sort(key=lambda player: hand_rank_values.get(player.handRank, 0), reverse=True)
+        hand_rank_values=[
+        ("Royal Flush",10,[]),
+        ("Straight Flush", 9, []),
+        ("Four of a Kind", 8, []),
+        ("Full House", 7, []),
+        ("Flush", 6, []),
+        ("Straight", 5, []),
+        ("Three of a Kind", 4, []),
+        ("Two Pair", 3, []),
+        ("Pair", 2, []),
+        ("High Card", 1, [])]
 
-        
+        # Create a dictionary to hold players grouped by hand rank
+        players_by_rank = {rank[0]: rank[2] for rank in hand_rank_values}
+
+        # Add each player to the corresponding list based on their hand rank
+        for player in players:
+            players_by_rank[player.handRank].append(player)
+
+
+        for rank, player_list in players_by_rank.items():
+            if rank in ["Royal Flush","Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind","Two Pair", "Pair", "High Card"]:
+                tie_break(player_list, rank)  # Run tie-breaker for all ranks
+
+
+        for rank, player_list in players_by_rank.items():
+           # print(f"Players with {rank}:")
+            for player in player_list:
+                player.show_hand()
+
             
         
         
@@ -260,7 +371,7 @@ if __name__ == "__main__":
         for player in table:
             player.show_hand()
             player.determine_hand_rank()
-            print(f"Hand Rank: {player.handRank}")
+            #print(f"Hand Rank: {player.handRank}")
 
         print("\n\nRemaining Cards in the deck: ")
         deck.showDeck()
@@ -270,32 +381,42 @@ if __name__ == "__main__":
         #table[0].determine_hand_rank()
         #table[0].show_hand()
 
-        hand_rank_values = {
-        "Royal Flush": 10,
-        "Straight Flush": 9,
-        "Four of a Kind": 8,
-        "Full House": 7,
-        "Flush": 6,
-        "Straight": 5,
-        "Three of a Kind": 4,
-        "Two Pair": 3,
-        "Pair": 2,
-        "High Card": 1,
-    }
+        hand_rank_values=[
+        ("Royal Flush",10,[]),
+        ("Straight Flush", 9, []),
+        ("Four of a Kind", 8, []),
+        ("Full House", 7, []),
+        ("Flush", 6, []),
+        ("Straight", 5, []),
+        ("Three of a Kind", 4, []),
+        ("Two Pair", 3, []),
+        ("Pair", 2, []),
+        ("High Card", 1, [])]
+
+        # Create a dictionary to hold players grouped by hand rank
+        players_by_rank = {rank[0]: rank[2] for rank in hand_rank_values}
+
+        # Add each player to the corresponding list based on their hand rank
+        for player in table:
+            players_by_rank[player.handRank].append(player)
 
 
-        royalFlush=[]
-        straightFlush=[]
-        fourofaKind=[]
-        fullHouse=[]
-        flush=[]
-        straight=[]
-        threeofaKind=[]
-        twoPair=[]
-        pair=[]
-        highCard=[]
-    
+        for rank, player_list in players_by_rank.items():
+            if rank in ["Royal Flush","Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind","Two Pair", "Pair", "High Card"]:
+                tie_break(player_list,0)  # Run tie-breaker for all ranks
 
+
+        for rank, player_list in players_by_rank.items():
+           # print(f"Players with {rank}:")
+            for player in player_list:
+                player.show_hand()
+
+        
+        
+        
+        
+        
+        
     
 
 
