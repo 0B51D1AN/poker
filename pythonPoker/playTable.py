@@ -20,21 +20,15 @@ class Deck:
             return None  # Return None if the deck is empty
 
     def showDeck(self):
-        
-        
         for card in self.cards:
-            suits = ["S", "H", "C", "D"]
-            faces = [str(i) for i in range(2, 11)] + ["J", "Q", "K", "A"]
-            suit_str = suits[card[0] - 1]
-            face_str = faces[card[1] - 1]
-            print(face_str + suit_str, end= " ")
+            print(self.card_to_string(card), end= " ")
 
     def card_to_string(self, card):
         # Convert a card tuple (suit, face) to a string representation
         suits = ["S", "H", "C", "D"]
-        faces = [str(i) for i in range(2, 11)] + ["J", "Q", "K", "A"]
+        faces = [str(i) for i in range(2, 11)] + ["J", "Q", "K", "A","A"]
         suit_str = suits[card[0] - 1]
-        face_str = faces[card[1] - 1]
+        face_str = faces[card[1] -2]
         return f"{face_str}{suit_str}"
 
     
@@ -59,9 +53,9 @@ class Player:
     def card_to_string(self, card):
         # Convert a card tuple (suit, face) to a string representation
         suits = ["S", "H", "C", "D"]
-        faces = [str(i) for i in range(2, 11)] + ["J", "Q", "K", "A"]
+        faces = [str(i) for i in range(2, 11)] + ["J", "Q", "K", "A","A"]
         suit_str = suits[card[0] - 1]
-        face_str = faces[card[1] - 1]
+        face_str = faces[card[1] -2]
         return f"{face_str}{suit_str}"
     
             
@@ -80,11 +74,11 @@ class Player:
     def determine_hand_rank(self):
         # Sort the hand by face value
         self.organize_hand_by_face()
-
+       # print(self.show_hand())
         # Check for different hand rankings in decreasing order of importance
-        if self.is_straight_flush() and self.hand[0][1] == 10:
+        if self.is_straight() and self.is_flush() and self.hand[0][1] == 1:
             self.handRank= "Royal Flush"
-        elif self.is_straight_flush():
+        elif self.is_flush() and self.is_straight():
             self.handRank = "Straight Flush"
         elif self.is_four_of_a_kind():
             self.handRank = "Four of a Kind"
@@ -135,15 +129,22 @@ class Player:
 
     def is_straight(self):
         # Check for a straight (consecutive cards)
+        if self.hand[0][1]==1 and self.hand[1][1]== 10 and self.hand[2][1]== 11 and self.hand[3][1] == 12 and self.hand[4][1] == 13:
+                return True
         for i in range(1, len(self.hand)):
             if self.hand[i][1] != self.hand[i - 1][1] + 1:
                 return False
+            
         return True
 
     def is_three_of_a_kind(self):
         # Check for three cards with the same face value
         for i in range(2, len(self.hand)):
             if self.hand[i][1] == self.hand[i - 1][1] == self.hand[i - 2][1]:
+                if self.hand[i][1]==1:
+                    self.set=14
+                else:
+                    self.set=self.hand[i][1]
                 return True
         return False
 
@@ -152,8 +153,20 @@ class Player:
         pairs = 0
         for i in range(1, len(self.hand)):
             if self.hand[i][1] == self.hand[i - 1][1]:
+                if self.hand[i][1]==1:
+                    self.pair1=14
+                else:
+                    self.pair1=self.hand[i][1]
                 pairs += 1
                 if pairs == 2:
+                    self.pair2=self.hand[i][1]
+                    if self.pair1==14:
+                        temp=self.pair2
+                        self.pair2= self.pair1
+                        self.pair1=temp
+                    for card in self.hand:
+                        if card[1]!=self.pair1 and card[1] != self.pair2:
+                            kicker= card[0]
                     return True
         return False
 
@@ -161,6 +174,15 @@ class Player:
         # Check for one pair of cards with the same face value
         for i in range(1, len(self.hand)):
             if self.hand[i][1] == self.hand[i - 1][1]:
+                if self.hand[i][1]==1:
+                    self.pair=14
+                    self.kicker=self.hand[4][0] #only need suit of card if card is ace, high card cannot be ace
+                else:
+                    self.pair=self.hand[i][1]
+                    if i==4:
+                        self.kicker= self.hand[2][0]
+                    else:
+                        self.kicker= self.hand[4][0]                        
                 return True
         return False
 
@@ -168,20 +190,29 @@ class Player:
 
 
 
-
+readCards=[]
+duplicateCards=[]
 def read_hands_from_csv(file_path):
     hands = []
+
     with open(file_path, 'r') as csvfile:
         reader = csv.reader(csvfile)
+        
         for row in reader:
-            hand = [card.strip() for card in row]
-            if len(hand) != 5:
+            hand=[]
+            for card in row:
+            
+                if card in readCards:
+                    duplicateCards.append(card.strip())
+                else:
+                    readCards.append(card.strip())
+                hand.append(card.strip())
+                print(card.strip())
+            if len(hand) >5:
                 print("Each hand must have exactly 5 cards.")
                 sys.exit(1)
-            if len(set(hand)) != 5:
-                print("Duplicate cards detected in a hand. Each card must be unique.")
-                sys.exit(1)
-            hands.append(hand)
+        hands.append(hand)
+        hand.clear()
     return hands
 
 def tie_break(players, index):
@@ -191,8 +222,10 @@ def tie_break(players, index):
         flush(players)
     elif index == 2:  # FourofaKind
         for player in players:
-            if player.hand[1][1] == 1:
-                player.hand[1][1] = 14
+            if player.hand[0][1]==1:
+                temp=player.hand[0][0]
+                player.hand.pop(0)
+                player.hand.append((temp, 14))
         players.sort(key=lambda player: player.hand[1][1], reverse=True)
     elif index == 3:  # FullHouse
         players.sort(key=lambda player: player.hand[2][1], reverse=True)
@@ -201,10 +234,7 @@ def tie_break(players, index):
     elif index == 5:  # Straight
         straight(players)
     elif index == 6:  # ThreeofaKind
-        for player in players:
-            if player.hand[1][1] == 1:
-                player.hand[1][1] = 14
-        players.sort(key=lambda player: player.hand[1][1], reverse=True)
+        players.sort(key=lambda player: player.set, reverse=True)
     elif index == 7:  # TwoPair
         two_pair(players)
     elif index == 8:  # Pair
@@ -215,38 +245,14 @@ def tie_break(players, index):
 
 def flush(players):
     for player in players:
-        if player.hand[1][1] == 1:
-            player.hand[1][1] = 14
+        if player.hand[0][1]==1:
+            temp=player.hand[0][0]
+            player.hand.pop(0)
+            player.hand.append((temp, 14))
+    players.sort(key=lambda player: player.hand[4][0], reverse=True)
 
-    players.sort(key=lambda player: player.hand[1][1], reverse=True)
-    players.sort(key=lambda player: player.hand[0][0])
+    #Sorted in suit order, now check if there are flush of the same suit and break by highest card
 
-
-def straight(players):
-    for player in players:
-        if player.hand[1][1] == 1:
-            player.hand[1][1] = 14
-    players.sort(key=lambda player: player.hand[1][1], reverse=True)
-
-
-def two_pair(players):
-    players.sort(key=lambda player: player.hand[2][1])
-    index = 0
-    while players[index].hand[2][1] == 1:
-        index += 1
-    if index > len(players) - 1:
-        players.reverse()
-    else:
-        players.reverse()
-
-
-def pair(players):
-    for player in players:
-        if player.hand[1][1] == 1:
-            player.hand[1][1] = 14
-
-    players.sort(key=lambda player: player.hand[1][1])
-    players.reverse()
     n = len(players)
     swapped = False
 
@@ -254,8 +260,58 @@ def pair(players):
         swapped = False
 
         for j in range(n - 1 - i):
-            if players[j].hand[1][1] == players[j + 1].hand[1][1]:
-                if players[j].hand[2][1] < players[j + 1].hand[2][1]:
+            if players[j].hand[4][0] == players[j + 1].hand[4][0]:
+                if players[j].hand[4][1] < players[j + 1].hand[4][1]:
+                    players[j], players[j + 1] = players[j + 1], players[j]
+                swapped = True
+
+        if not swapped:
+            break
+
+def straight(players):
+    for player in players:
+        if player.hand[0][1]==1 and player.hand[1][1]==10:
+            temp=player.hand[0][0]
+            player.hand.pop(0)
+            player.hand.append((temp, 14))
+    players.sort(key=lambda player: player.hand[4][1], reverse=True)
+
+
+def two_pair(players):
+    
+    players.sort(key=lambda player: player.pair2, reverse= True)
+    
+    n = len(players)
+    swapped = False
+
+    for i in range(n - 1):
+        swapped = False
+
+        for j in range(n - 1 - i):
+            if players[j].pair1 == players[j + 1].pair1 and players[j].pair2 == players[j+1].pair2:
+                if players[j].kicker > players[j + 1].kicker:
+                    players[j], players[j + 1] = players[j + 1], players[j]
+                swapped = True
+
+        if not swapped:
+            break
+
+
+
+def pair(players):
+    
+    
+    players.sort(key=lambda player: player.pair, reverse= True)
+    
+    n = len(players)
+    swapped = False
+
+    for i in range(n - 1):
+        swapped = False
+
+        for j in range(n - 1 - i):
+            if players[j].pair == players[j + 1].pair:
+                if players[j].kicker > players[j + 1].kicker:
                     players[j], players[j + 1] = players[j + 1], players[j]
                 swapped = True
 
@@ -264,10 +320,30 @@ def pair(players):
 
 
 def high_card(players):
+    
     for player in players:
-       if player.hand[1][1] == 1:
-          player.hand[1][1] = 14
-    players= max(self.hand, key=lambda card: card[4])
+        if player.hand[0][1]==1:
+            temp=player.hand[0][0]
+            player.hand.pop(0)
+            player.hand.append((temp, 14))
+            
+    players.sort(key= lambda player: player.hand[4][1], reverse=True)
+    
+    n = len(players)
+    swapped = False
+
+    for i in range(n - 1):
+        swapped = False
+
+        for j in range(n - 1 - i):
+            if players[j].hand[4][1] == players[j + 1].hand[4][1]:
+                if players[j].hand[4][0] > players[j + 1].hand[4][0]:
+                    players[j], players[j + 1] = players[j + 1], players[j]
+                swapped = True
+
+        if not swapped:
+            break
+    
     #players.sort(key=lambda player: player.hand[1][1])
     #players.reverse()
 
@@ -313,16 +389,16 @@ if __name__ == "__main__":
        #players.sort(key=lambda player: hand_rank_values.get(player.handRank, 0), reverse=True)
 
         hand_rank_values=[
-        ("Royal Flush",10,[]),
-        ("Straight Flush", 9, []),
-        ("Four of a Kind", 8, []),
-        ("Full House", 7, []),
-        ("Flush", 6, []),
+        ("Royal Flush",0,[]),
+        ("Straight Flush", 1, []),
+        ("Four of a Kind", 2, []),
+        ("Full House", 3, []),
+        ("Flush", 4, []),
         ("Straight", 5, []),
-        ("Three of a Kind", 4, []),
-        ("Two Pair", 3, []),
-        ("Pair", 2, []),
-        ("High Card", 1, [])]
+        ("Three of a Kind", 6, []),
+        ("Two Pair", 7, []),
+        ("Pair", 8, []),
+        ("High Card", 9, [])]
 
         # Create a dictionary to hold players grouped by hand rank
         players_by_rank = {rank[0]: rank[2] for rank in hand_rank_values}
@@ -334,7 +410,7 @@ if __name__ == "__main__":
 
         for rank, player_list in players_by_rank.items():
             if rank in ["Royal Flush","Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind","Two Pair", "Pair", "High Card"]:
-                tie_break(player_list, rank)  # Run tie-breaker for all ranks
+                tie_break(player_list, rank_index(rank))  # Run tie-breaker for all ranks
 
 
         for rank, player_list in players_by_rank.items():
@@ -382,16 +458,16 @@ if __name__ == "__main__":
         #table[0].show_hand()
 
         hand_rank_values=[
-        ("Royal Flush",10,[]),
-        ("Straight Flush", 9, []),
-        ("Four of a Kind", 8, []),
-        ("Full House", 7, []),
-        ("Flush", 6, []),
+        ("Royal Flush",0,[]),
+        ("Straight Flush", 1, []),
+        ("Four of a Kind", 2, []),
+        ("Full House", 3, []),
+        ("Flush", 4, []),
         ("Straight", 5, []),
-        ("Three of a Kind", 4, []),
-        ("Two Pair", 3, []),
-        ("Pair", 2, []),
-        ("High Card", 1, [])]
+        ("Three of a Kind", 6, []),
+        ("Two Pair", 7, []),
+        ("Pair", 8, []),
+        ("High Card", 9, [])]
 
         # Create a dictionary to hold players grouped by hand rank
         players_by_rank = {rank[0]: rank[2] for rank in hand_rank_values}
@@ -403,7 +479,7 @@ if __name__ == "__main__":
 
         for rank, player_list in players_by_rank.items():
             if rank in ["Royal Flush","Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind","Two Pair", "Pair", "High Card"]:
-                tie_break(player_list,0)  # Run tie-breaker for all ranks
+                tie_break(player_list,rank_index(rank))  # Run tie-breaker for all ranks
 
 
         for rank, player_list in players_by_rank.items():
