@@ -194,25 +194,24 @@ readCards=[]
 duplicateCards=[]
 def read_hands_from_csv(file_path):
     hands = []
-
     with open(file_path, 'r') as csvfile:
         reader = csv.reader(csvfile)
-        
         for row in reader:
-            hand=[]
-            for card in row:
+            hand = [card.strip() for card in row]
             
-                if card in readCards:
-                    duplicateCards.append(card.strip())
-                else:
-                    readCards.append(card.strip())
-                hand.append(card.strip())
-                print(card.strip())
-            if len(hand) >5:
+            if len(hand) != 5:
                 print("Each hand must have exactly 5 cards.")
                 sys.exit(1)
-        hands.append(hand)
-        hand.clear()
+            for card in hand:
+                if card in readCards:
+                    duplicateCards.append(card)
+                readCards.append(card)
+            hands.append(hand)
+    if len(duplicateCards)>0:
+        print("Duplicate Cards detected:")
+        for card in duplicateCards:
+            print(card)
+        sys.exit(1)
     return hands
 
 def tie_break(players, index):
