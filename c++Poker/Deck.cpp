@@ -53,16 +53,24 @@ class Deck
                 // Handle the case where the deck is empty
                 // You can throw an exception or return a special "no card" indicator.
                 // For simplicity, we'll just return an empty card here.
+                cout<<"Deck is empty";
                 return Card(0, 0);
             }
         }
 
         void showDeck()
         {
+            int i=0;
             for(Card c: deck)
             {
                 c.printCard();
                 cout<<" ";
+                i++;
+                if(i==13)
+                {
+                    cout<<endl;
+                    i=0;
+                }
             }
             cout<<endl;
         }

@@ -9,6 +9,8 @@ class Card
         int Face;
         int Suit;
 
+        Card();
+
         Card(int f, int s);
 
         Card(const string& card);

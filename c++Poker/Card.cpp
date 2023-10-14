@@ -6,8 +6,12 @@ using namespace std;
 
 
  
-
-        Card::Card(int f, int s)
+        Card::Card()
+        {
+                Face=0;
+                Suit=0;
+        }
+        Card::Card(int f, int s) //no pass by reference since we are not trying to change the value passed
         {
             Face=f;
             Suit=s;
@@ -69,6 +73,9 @@ using namespace std;
                         break;
                 case 11:
                         cout<<"J";
+                        break;
+                case 14:
+                        cout<<"A";
                         break;
                 default:
                         cout<<Face;
