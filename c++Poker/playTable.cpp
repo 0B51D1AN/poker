@@ -148,10 +148,26 @@ static void tieBreak(vector<Player> &v) //assuming there are at least 2 items in
             reverse(v.begin(), v.end());
             break;
         case 2:
+             for(Player &p : v)
+            {   
+                if(p.hRank[0].Face==1)
+                {
+                    p.hRank[0].Face=14;
+                    //sort(p.hand.begin(), p.hand.end());
+                }
+            }
             sort(v.begin(), v.end(), Player::compareByCard);//
             reverse(v.begin(), v.end());
             break;
         case 3:
+             for(Player &p : v)
+            {   
+                if(p.hRank[0].Face==1)
+                {
+                    p.hRank[0].Face=14;
+                    //sort(p.hand.begin(), p.hand.end());
+                }
+            }
             sort(v.begin(), v.end(), Player::compareByCard);//
             reverse(v.begin(), v.end());
             break;
@@ -164,10 +180,26 @@ static void tieBreak(vector<Player> &v) //assuming there are at least 2 items in
             reverse(v.begin(), v.end());
             break;
         case 6:
+             for(Player &p : v)
+            {   
+                if(p.hRank[0].Face==1)
+                {
+                    p.hRank[0].Face=14;
+                    //sort(p.hand.begin(), p.hand.end());
+                }
+            }
             sort(v.begin(), v.end(), Player::compareByCard);//
             reverse(v.begin(), v.end());
             break;
         case 7:
+             for(Player &p : v)
+            {   
+                if(p.hRank[0].Face==1)
+                {
+                    p.hRank[0].Face=14;
+                    //sort(p.hand.begin(), p.hand.end());
+                }
+            }
             sort(v.begin(), v.end(), Player::compareByCard);//Still need to sort out specific ties
             reverse(v.begin(), v.end());    
             break;

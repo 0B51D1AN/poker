@@ -36,17 +36,20 @@ class Player
         bool isStraight()
         {
             int a=0;
-            hand[0].Face;
-
+            cout<<hand[0].Face;
+            //this->showHand();
+            
             if((hand[0].Face==1) && (hand[1].Face==10) && (hand[2].Face==11) && (hand[3].Face==12) && (hand[4].Face==13))
                 return true;
             else
             {
-                for(int i=1; i<6; i++)
+                
+                for(int i=1; i<5; i++)
                 {
-                    if(hand[i].Face!=hand[i-1].Face+1)
+                    if(this->hand[i].Face!=this->hand[i-1].Face+1)
                         return false;
                 }
+                return true;
             }
             return false;
         }
@@ -158,7 +161,7 @@ class Player
             {
                 if (faceCounts[i] == 2)
                 {
-                    this->hRank.push_back(Card(i+1, 0));
+                    this->hRank.push_back(Card(i, 1));
                     pairCount++;
                 }    
             }
@@ -186,7 +189,7 @@ class Player
             {
                 if (faceCounts[i] == 2)
                 {
-                    this->hRank.push_back(Card(i, 0));
+                    this->hRank.push_back(Card(i, 1));
                     return true;
                 }
             }
