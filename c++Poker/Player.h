@@ -29,7 +29,7 @@ class Player
         static bool compareBySuit(const Player & a, const Player & b);
         static bool compareByCard(const Player & a, const Player & b);
         static bool compareTwoPair(const Player & a, const Player & b);
-        
+        static bool comparePair(const Player & a, const Player & b);
         // void setHand(const vector<string>& cards) {
         //     h = cards;
         // }

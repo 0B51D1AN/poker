@@ -228,7 +228,7 @@ static void tieBreak(vector<Player> &v) //assuming there are at least 2 items in
                 }
                 //p.hRank[2].printCard();
             }
-            sort(v.begin(), v.end(), Player::compareByCard);//
+            sort(v.begin(), v.end(), Player::comparePair);//
             reverse(v.begin(), v.end());
             break;
         case 9:
