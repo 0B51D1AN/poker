@@ -108,7 +108,11 @@ using namespace std;
                         return other.Suit<Suit;
                 return false;      
         }
-        
+        //  bool Card:: operator=(const Card& other) const
+        //  {
+        //         other.Face=Face;
+        //         other.Suit=Suit;
+        //  }
 
 
 

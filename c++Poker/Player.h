@@ -28,6 +28,8 @@ class Player
         static bool compareByHighCard(const Player & a, const Player & b);
         static bool compareBySuit(const Player & a, const Player & b);
         static bool compareByCard(const Player & a, const Player & b);
+        static bool compareTwoPair(const Player & a, const Player & b);
+        
         // void setHand(const vector<string>& cards) {
         //     h = cards;
         // }
@@ -36,7 +38,7 @@ class Player
         bool isStraight()
         {
             int a=0;
-            cout<<hand[0].Face;
+            //cout<<hand[0].Face;
             //this->showHand();
             
             if((hand[0].Face==1) && (hand[1].Face==10) && (hand[2].Face==11) && (hand[3].Face==12) && (hand[4].Face==13))
@@ -155,18 +157,26 @@ class Player
             {
                 faceCounts[card.Face]++;
             }
-
+            int temp=0;
             int pairCount = 0;
             for (int i=0; i<faceCounts.size(); i++)
             {
                 if (faceCounts[i] == 2)
                 {
-                    this->hRank.push_back(Card(i, 1));
+                    this->hRank.push_back(Card(i+1, 1));
                     pairCount++;
-                }    
+                }          
             }
-
-            return pairCount == 2;
+            int a=0;
+            
+            if (pairCount==2)
+                return true;
+            else   
+            {
+                hRank.clear();
+                return false;
+            }
+            
         }
 
 

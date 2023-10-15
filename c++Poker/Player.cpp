@@ -159,7 +159,37 @@ using namespace std;
         }
 
        
+        bool Player:: compareTwoPair(const Player & a, const Player & b)
+        {
+            Card tempA;
+            Card tempB;
+            if((a.hRank[0].Face==b.hRank[0].Face))
+            {
+                if(a.hRank[1].Face==b.hRank[1].Face)
+                {
+                    for(Card c : a.hand)
+                    {
+                        if(c.Face!=a.hRank[0].Face && c.Face!=a.hRank[1].Face)
+                            tempA=c;
+                    }
 
+                    for(Card c : b.hand)
+                    {
+                        if(c.Face!=b.hRank[0].Face && c.Face!=b.hRank[1].Face)
+                            tempB=c;
+                    }
+                    return tempA<tempB;
+
+                }
+                else
+                {
+                    return a.hRank[1].Face<b.hRank[1].Face;
+                }
+            }
+            else
+                return a.hRank[0].Face < b.hRank[0].Face;
+
+        }
 
 
 

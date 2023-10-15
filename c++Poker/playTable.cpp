@@ -9,6 +9,7 @@ using namespace std;
 
 static void ShowWinners(Player players[]);
 static void tieBreak(vector<Player> &v);
+static void twoPair(vector <Player> &v);
 
 int main(int argc, char* argv[])
 {
@@ -19,11 +20,13 @@ int main(int argc, char* argv[])
         //cout<<argv[1];
         ifstream file(argv[1]);
         Player players[6];
-
+        vector <string> inputCards;
+        vector <string> duplicate;
         if (file) 
         {
             string line;
             int a=0;
+            
             while (getline(file, line)) {
                 
                 stringstream ss(line);
@@ -33,6 +36,14 @@ int main(int argc, char* argv[])
                 while (getline(ss, card, ',' )) {
                     
                     card.erase(remove_if(card.begin(), card.end(), ::isspace), card.end());
+                    //cout<<card;
+                    for(string &s : inputCards)
+                    {
+                        if(card.compare(s)==0)
+                            duplicate.push_back(card);
+                        
+                    }
+                    inputCards.push_back(card);
                     cards[i]=card;
                     i++;
                 }
@@ -42,6 +53,7 @@ int main(int argc, char* argv[])
                 players[a]=player;
                 a++;
             }
+            
 
         }
         cout<<"*** Using Test Deck ***\n\n";
@@ -50,6 +62,17 @@ int main(int argc, char* argv[])
         {
             p.showHand();
             p.rankHand();
+        }
+
+        if(duplicate.size()>0)
+        {
+            cout<<"*** ERROR - DUPLICATE CARD(s) DETECTED\n";
+            for(string s : duplicate)
+            {
+                cout<<s<<" ";
+            }
+            cout<<"\n"<<endl;
+            return 0;
         }
         cout<<"\n---Winning Hand Order---\n";
         ShowWinners(players);
@@ -190,18 +213,10 @@ static void tieBreak(vector<Player> &v) //assuming there are at least 2 items in
             }
             sort(v.begin(), v.end(), Player::compareByCard);//
             reverse(v.begin(), v.end());
+
             break;
         case 7:
-             for(Player &p : v)
-            {   
-                if(p.hRank[0].Face==1)
-                {
-                    p.hRank[0].Face=14;
-                    //sort(p.hand.begin(), p.hand.end());
-                }
-            }
-            sort(v.begin(), v.end(), Player::compareByCard);//Still need to sort out specific ties
-            reverse(v.begin(), v.end());    
+            twoPair(v);
             break;
         case 8:
             for(Player &p : v)
@@ -211,6 +226,7 @@ static void tieBreak(vector<Player> &v) //assuming there are at least 2 items in
                     p.hRank[0].Face=14;
                     //sort(p.hand.begin(), p.hand.end());
                 }
+                //p.hRank[2].printCard();
             }
             sort(v.begin(), v.end(), Player::compareByCard);//
             reverse(v.begin(), v.end());
@@ -230,4 +246,21 @@ static void tieBreak(vector<Player> &v) //assuming there are at least 2 items in
             break;
     }
 
+}
+
+static void twoPair(vector <Player> &v)
+{
+    for(Player &p : v)
+    {   
+        if(p.hRank[0].Face==1)
+        {
+            p.hRank[0].Face=14;
+            //sort(p.hand.begin(), p.hand.end());
+        }
+    }
+    sort(v.begin(), v.end(), Player::compareTwoPair);//Still need to sort out specific ties
+    reverse(v.begin(), v.end());
+
+    
+    
 }
