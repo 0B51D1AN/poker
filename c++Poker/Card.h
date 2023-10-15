@@ -17,6 +17,7 @@ class Card
 
         void printCard();
         bool operator<(const Card& other) const;
+        
 };
 
 #endif // CARD_H

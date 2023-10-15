@@ -38,7 +38,7 @@ using namespace std;
                         break;
 
                 default:
-                    Face=card[0]-'0';
+                    Face=(int)card[0]-'0';
                         break;
             }
             switch(card[card.length()-1])
@@ -102,12 +102,13 @@ using namespace std;
 
         bool Card:: operator<(const Card& other) const
         {
-                if(Face< other.Face)
+                if(Face <other.Face)
                         return true;
                 else if(Face==other.Face)
-                        return Suit<other.Suit;
+                        return other.Suit<Suit;
                 return false;      
         }
+        
 
 
 
