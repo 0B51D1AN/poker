@@ -8,7 +8,7 @@ module class_Player
     character(20) :: handRank
     integer :: numRank
     type(Card), dimension(5) :: hand
-    type(Card), dimension(:), allocatable :: hRank
+    type(Card), dimension(3) :: hRank
   contains
     procedure :: CreatePlayer
     procedure :: ShowHand
@@ -82,11 +82,11 @@ contains
     if (this%isStraight() .and. this%isFlush()) then
         this%handRank = "Straight Flush"
         this%numRank = 2
-        if (this%hand(1)%Face == 1) then
-            this%hRank = [this%hand(1)]
-        else
-            this%hRank = [this%hand(5)]
-        end if
+        !if (this%hand(1)%Face == 1) then
+        !   this%hRank(1) = this%hand(1)
+        !else
+        !    this%hRank(1) = this%hand(5)
+        !end if
         return
     end if
 
@@ -94,7 +94,7 @@ contains
     if (this%isFourOfKind()) then
         this%handRank = "Four of a Kind"
         this%numRank = 3
-        this%hRank = [this%hand(2)] ! Must be one of the four
+        !this%hRank(1) = this%hand(2) ! Must be one of the four
         return
     end if
 
@@ -102,7 +102,7 @@ contains
     if (this%isFullHouse()) then
         this%handRank = "Full House"
         this%numRank = 4
-        this%hRank = [this%hand(3)] ! Must be the 3-pair
+        !this%hRank(1) = this%hand(3) ! Must be the 3-pair
         return
     end if
 
@@ -117,7 +117,7 @@ contains
     if (this%isStraight()) then
         this%handRank = "Straight"
         this%numRank = 6
-        this%hRank = [this%hand(5)]
+        !this%hRank(1) = this%hand(5)
         return
     end if
 
@@ -125,7 +125,7 @@ contains
     if (this%isThreeOfKind()) then
         this%handRank = "Three of a Kind"
         this%numRank = 7
-        this%hRank = [this%hand(3)]
+        !this%hRank(1) = this%hand(3)
         return
     end if
 
@@ -209,8 +209,15 @@ function isFourOfKind(this) result(result)
   ! Check for four cards of the same face value
   do i = 1, 13
       if (faceCounts(i) == 4) then
+        if(i==1) then
+          this%hRank(1)=Card(14,1)
           result = .true.
           return
+        else
+          this%hRank(1)=Card(i,1)
+          result = .true.
+          return
+        end if
       end if
   end do
 end function isFourOfKind
@@ -239,6 +246,11 @@ function isFullHouse(this) result(result)
   do i = 1, 13
       if (faceCounts(i) == 3) then
           hasThree = .true.
+          if(i==1) then
+            this%hRank(1)=Card(14,1)
+          else
+            this%hRank(1)=Card(i,1)
+          end if
       else if (faceCounts(i) == 2) then
           hasTwo = .true.
       end if
@@ -266,8 +278,15 @@ function isThreeOfKind(this) result(result)
   ! Check for three cards of the same face value
   do i = 1, 13
       if (faceCounts(i) == 3) then
-          result = .true.
-          return
+          if(i==1) then
+            this%hRank(1)=Card(14,1)
+            result = .true.
+            return
+          else
+            this%hRank(1)=Card(i,1)
+            result = .true.
+            return
+          end if
       end if
   end do
 end function isThreeOfKind
@@ -293,12 +312,26 @@ function isTwoPair(this) result(result)
   ! Check for two sets of two cards with the same face value
   do i = 1, 13
       if (faceCounts(i) == 2) then
-          this%hRank = [Card(i+1, 1)]
+        if(paircount==1) then
+          this%hRank(2)=Card(i,1)
+          pairCount= pairCount+1
+        end if
+        if(i==1) then
+          this%hRank(1)=Card(14, 1)
+        else
+          this%hRank(1) = Card(i, 1)
           pairCount = pairCount + 1
+        end if
       end if
   end do
   
+  do i=1, size(this%hand)
+    if(this%hand(i)%Face/=this%hRank(1)%Face .and. this%hand(i)%Face/=this%hRank(2)%Face) then
+      this%hRank(3)=this%hand(i)
+    end if
+  end do
   result = (pairCount == 2)
+  
 end function isTwoPair
 
 function isPair(this) result(result)
@@ -306,7 +339,7 @@ function isPair(this) result(result)
   logical :: result
   integer :: i
   integer, dimension(14) :: faceCounts
-  
+  type(Card), dimension(:), allocatable :: tempHand
   result = .false.
 
   ! Initialize faceCounts
@@ -320,11 +353,23 @@ function isPair(this) result(result)
   ! Check for two cards with the same face value
   do i = 1, 13
       if (faceCounts(i) == 2) then
-          this%hRank = [Card(i, 1)]
+        if(i==1) then
+          this%hRank(1) = Card(14, 1)
           result = .true.
           return
+        else
+          this%hRank(1) = Card(i, 1)
+          result = .true.
+          return
+        end if
       end if
   end do
+  if(this%hand(5)%Face== this%hRank(1)%Face) then
+    this%hRank(2)=this%hand(3)
+  else
+    this%hRank(2)= this%hand(5)
+  end if
+
 end function isPair
 
 
