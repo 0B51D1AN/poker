@@ -9,14 +9,12 @@ program main
     character(80) :: txtline
     type(Deck) :: deck1
     type(Player), dimension(6) :: table
-    character(:), allocatable :: line, outline, word
+    character(:), allocatable :: line, outline, word, duplicates, usedCards, temporaryArray
     character(30) :: temp
     
     integer :: index
     integer :: i, a, ios, unit
     type(Card) :: tempCard
-
-    
 
     do index=1, size(table)
         call table(index)%CreatePlayer()
@@ -27,8 +25,15 @@ program main
         call get_command_argument(1, filename)
         unit =1
         open(unit, file=filename, status="old")
+        print*, "*** USING TEST DECK ***"
 
-         ! Loop through the lines in the CSV file
+        print*
+
+        print*,"*** File: ", filename
+        print *
+        print *,"*** Here are the six hands..."
+
+        ! Loop through the lines in the CSV file
         do i = 1, 6
             ! Read a line containing the player's hand
             read(unit, '(A)', iostat=ios) txtline
@@ -41,21 +46,29 @@ program main
         ! Initialize outline to be same string as line, it will get overwritten in 
         ! the subroutine, but we need it for loop control
         outline = txtline
-            index=0
+            index=1
             do while (len(outline) .ne. 0)
                 call get_next_token( txtline, outline, word)
                 !write(*,'(A)') trim(adjustl(word))
                 temp=trim(word)
                 temp=sweep_blanks(temp)
-                print*, temp
+                !print*, temp
                 txtline = outline
-                !call tempCard%makeCardfromString(trim(temp))
-                !call tempCard%PrintCard()
+                do a=1, size(usedCards)
+
+                end do
+                call tempCard%makeCardfromString(trim(temp))
+                table(i)%hand(index)=tempCard
+                index=index+1
             end do
         end do
-        !do index=1, size(table)
-        !    call table(index)%ShowHand()
-        !end do
+        do index=1, size(table)
+            call table(index)%ShowHand()
+            call table(index)%RankHand()
+        end do
+
+        print *, "---WINNING HAND ORDER---"
+        call ShowWinners(table)
 
     ! Close the CSV file
     close(unit)

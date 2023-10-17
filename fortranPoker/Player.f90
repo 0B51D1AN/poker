@@ -160,7 +160,9 @@ function isStraight(this) result(result)
   if (this%hand(1)%Face == 1 .and. this%hand(2)%Face == 10 .and. &
       this%hand(3)%Face == 11 .and. this%hand(4)%Face == 12 .and. &
       this%hand(5)%Face == 13) then
+      this%hand(1)%Face=14
       result = .true.
+      call this%RankHand()
       return
   end if
 

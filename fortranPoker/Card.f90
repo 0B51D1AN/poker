@@ -67,11 +67,12 @@ contains
         class(Card), intent(out) :: outCard
         character(*), intent(in) :: card_str
         integer :: face_int, suit_int
+        !print*, card_str
 
         ! Map card face characters to integers
-        select case (card_str(1:1))
+        select case (card_str(2:2))
         case ('2':'9')
-            face_int = ichar(card_str(1:1)) - ichar('0')
+            face_int = ichar(card_str(2:2)) - ichar('0')
         case ('1')
             face_int = 10
         case ('J')
@@ -82,8 +83,10 @@ contains
             face_int = 13
         case ('A')
             face_int = 1
+        case('')
+            print*, "Stahp writing spaces"
         case default
-            error stop "Invalid card face character: " // card_str(1:1)
+            error stop "Invalid card face character: " // card_str(2:2)
         end select
 
                 ! Map card suit characters to integers
@@ -97,6 +100,8 @@ contains
             suit_int = 3
         case ('D')
             suit_int = 4
+        case (' ')
+            print* ,'stahp writing spaces'
         case default
             print*, card_str
             error stop "Invalid card suit character: " // card_str(len(card_str):len(card_str))
