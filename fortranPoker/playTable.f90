@@ -54,9 +54,8 @@ program main
                 temp=sweep_blanks(temp)
                 !print*, temp
                 txtline = outline
-                do a=1, size(usedCards)
+               
 
-                end do
                 call tempCard%makeCardfromString(trim(temp))
                 table(i)%hand(index)=tempCard
                 index=index+1
