@@ -216,5 +216,47 @@ subroutine SortByTwoPair(players)
 
 end subroutine SortByTwoPair
 
+subroutine get_next_token( inline, outline, token)
+
+    character (*) :: inline
+    character(:), allocatable :: outline, token 
+    integer :: i, j
+    logical :: foundFirst, foundLast
+
+    ! Initialize variables used to control loop
+
+    foundFirst = .false.
+    foundLast  = .false.
+    i = 0
+
+
+    ! find first comma 
+    do while ( .not. foundFirst .and. (i < len(inline)))  
+        if (inline(i:i) .eq. ",") then
+            i = i + 1
+        else
+            foundFirst = .true.
+        endif
+    enddo
+
+    j = i
+    do while ( foundFirst .and. .not. foundLast .and. ( j < len(inline)))
+        if (inline(j:j) .ne. ",") then
+            j = j + 1
+        else
+            foundLast = .true.
+        endif
+    enddo
+    
+    if(inline(j:j) .eq. ",") then
+            token = trim(inline(i:j-1))
+    else
+            token = trim(inline(i:j))
+    
+    endif
+    outline = adjustl(trim(inline(j+1:len(inline))))
+
+
+end subroutine get_next_token 
 
 end module mainFunctions

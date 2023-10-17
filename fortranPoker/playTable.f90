@@ -6,10 +6,10 @@ program main
     implicit none
     character(100) :: filename
     character(*) :: card_str
-    character(80) :: line
+    !character(80) :: line
     type(Deck) :: deck1
     type(Player), dimension(6) :: table
-
+    character(:), allocatable :: line, outline, word
     
     integer :: index
     integer :: i, a, ios, unit
@@ -26,32 +26,23 @@ program main
         unit =1
         open(unit, file=filename, status="old")
 
-        ! Loop through the lines in the CSV file
-        do i = 1, 6
-            ! Read a line containing the player's hand
-            read(unit, '(A)', iostat=ios) line
-            print*, line
-            if (ios /= 0) then
-                print *, "Error reading line ", i
-                exit
-            end if
+    
 
-            ! Split the line into individual cards
-            index=0
-            do a = 1, len_trim(line)
-                !read(line, '(A3)', iostat=ios) card_str
-                if(line(a:a)/= ',' .or. line(a:a)/=' ' .or. line(a:a)/= NEW_LINE('A')) then
-                    card_str=card_str//line(a:a)
-                end if
-                call tempCard%makeCardfromString(tempCard,card_str)
-                table(i)%hand(index)=tempCard
-                call table(i)%hand(index)%printCard()
-                index=index+1
-                
-                
-                
-            end do
-        end do
+        line = "10H, AD, 8C, 7C, 5H"
+        print *, line
+        print *, "The length of the string is ", len(line)
+
+        ! Initialize outline to be same string as line, it will get overwritten in 
+        ! the subroutine, but we need it for loop control
+
+        outline = line
+
+
+        do while (len(outline) .ne. 0)
+            call get_next_token( line, outline, word)
+            print *, word
+            line = outline
+        enddo
 
         do index=1, size(table)
             call table(index)%ShowHand()
@@ -100,3 +91,7 @@ program main
     
 
 end program main
+
+
+
+ 
