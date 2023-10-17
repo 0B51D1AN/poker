@@ -5,16 +5,18 @@ program main
     use mainFunctions
     implicit none
     character(100) :: filename
-    character(*) :: card_str
-    !character(80) :: line
+    character(88) :: card_str
+    character(80) :: txtline
     type(Deck) :: deck1
     type(Player), dimension(6) :: table
     character(:), allocatable :: line, outline, word
+    character(30) :: temp
     
     integer :: index
     integer :: i, a, ios, unit
     type(Card) :: tempCard
 
+    
 
     do index=1, size(table)
         call table(index)%CreatePlayer()
@@ -26,27 +28,34 @@ program main
         unit =1
         open(unit, file=filename, status="old")
 
-    
-
-        line = "10H, AD, 8C, 7C, 5H"
-        print *, line
-        print *, "The length of the string is ", len(line)
-
+         ! Loop through the lines in the CSV file
+        do i = 1, 6
+            ! Read a line containing the player's hand
+            read(unit, '(A)', iostat=ios) txtline
+            !print *, txtline
+            if (ios /= 0) then
+                print *, "Error reading line ", i
+                exit
+            end if
+        
         ! Initialize outline to be same string as line, it will get overwritten in 
         ! the subroutine, but we need it for loop control
-
-        outline = line
-
-
-        do while (len(outline) .ne. 0)
-            call get_next_token( line, outline, word)
-            print *, word
-            line = outline
-        enddo
-
-        do index=1, size(table)
-            call table(index)%ShowHand()
+        outline = txtline
+            index=0
+            do while (len(outline) .ne. 0)
+                call get_next_token( txtline, outline, word)
+                !write(*,'(A)') trim(adjustl(word))
+                temp=trim(word)
+                temp=sweep_blanks(temp)
+                print*, temp
+                txtline = outline
+                !call tempCard%makeCardfromString(trim(temp))
+                !call tempCard%PrintCard()
+            end do
         end do
+        !do index=1, size(table)
+        !    call table(index)%ShowHand()
+        !end do
 
     ! Close the CSV file
     close(unit)
@@ -88,10 +97,22 @@ program main
 
     end if
 
-    
+    contains
+    character(30) function sweep_blanks(in_str)
+        character(*), intent(in) :: in_str
+        character(30) :: out_str
+        character :: ch
+        integer :: j
+
+        out_str = " "
+        do j=1, len_trim(in_str)
+        ! get j-th char
+        ch = in_str(j:j)
+        if (ch .ne. " ") then
+            out_str = trim(out_str) // ch
+        endif
+        sweep_blanks = out_str 
+        end do
+    end function sweep_blanks
 
 end program main
-
-
-
- 
