@@ -20,8 +20,14 @@ class Deck:
             return None  # Return None if the deck is empty
 
     def showDeck(self):
+        index=1
         for card in self.cards:
             print(self.card_to_string(card), end= " ")
+            if(index==13):
+                print()
+                index=1
+            else:
+                index=index+1            
 
     def card_to_string(self, card):
         # Convert a card tuple (suit, face) to a string representation
@@ -416,11 +422,6 @@ if __name__ == "__main__":
            # print(f"Players with {rank}:")
             for player in player_list:
                 player.show_hand()
-
-            
-        
-        
-
         
     else:
 
@@ -475,25 +476,11 @@ if __name__ == "__main__":
         for player in table:
             players_by_rank[player.handRank].append(player)
 
-
         for rank, player_list in players_by_rank.items():
             if rank in ["Royal Flush","Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind","Two Pair", "Pair", "High Card"]:
                 tie_break(player_list,rank_index(rank))  # Run tie-breaker for all ranks
-
 
         for rank, player_list in players_by_rank.items():
            # print(f"Players with {rank}:")
             for player in player_list:
                 player.show_hand()
-
-        
-        
-        
-        
-        
-        
-    
-
-
-                
-        
