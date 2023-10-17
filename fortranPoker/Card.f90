@@ -87,7 +87,8 @@ contains
         end select
 
                 ! Map card suit characters to integers
-        select case (card_str(2:2))
+        
+        select case (card_str(len(card_str):len(card_str)))
         case ('S')
             suit_int = 1
         case ('H')
@@ -98,7 +99,7 @@ contains
             suit_int = 4
         case default
             print*, card_str
-            error stop "Invalid card suit character: " // card_str(2:2)
+            error stop "Invalid card suit character: " // card_str(len(card_str):len(card_str))
         end select
 
         outCard%Face = face_int

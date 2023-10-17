@@ -5,7 +5,7 @@ program main
     use mainFunctions
     implicit none
     character(100) :: filename
-    character(3) :: card_str
+    character(*) :: card_str
     character(80) :: line
     type(Deck) :: deck1
     type(Player), dimension(6) :: table
@@ -30,22 +30,24 @@ program main
         do i = 1, 6
             ! Read a line containing the player's hand
             read(unit, '(A)', iostat=ios) line
-           ! print*, line
+            print*, line
             if (ios /= 0) then
                 print *, "Error reading line ", i
                 exit
             end if
 
             ! Split the line into individual cards
-            do a = 1, 5
-                read(line, '(A2)', iostat=ios) card_str
-                if (ios /= 0) then
-                    print *, "Error reading card ", a, " in line ", i
-                    exit
-                else 
-                    call tempCard%makeCardfromString(card_str)
-                    table(i)%hand(a)=tempCard
+            index=0
+            do a = 1, len_trim(line)
+                !read(line, '(A3)', iostat=ios) card_str
+                if(line(a:a)/= ',' .or. line(a:a)/=' ' .or. line(a:a)/= NEW_LINE('A')) then
+                    card_str=card_str//line(a:a)
                 end if
+                call tempCard%makeCardfromString(tempCard,card_str)
+                table(i)%hand(index)=tempCard
+                call table(i)%hand(index)%printCard()
+                index=index+1
+                
                 
                 
             end do
