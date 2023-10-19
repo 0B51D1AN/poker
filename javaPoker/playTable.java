@@ -25,7 +25,7 @@ public class playTable
                 Scanner s= new Scanner(test);
                 s.useDelimiter(", |,|\n");
             
-           
+                System.out.println("***Using file "+args[0]);
                 Player [] players= new Player[6];
                 int p=0;
                 int i=0;
@@ -83,19 +83,28 @@ public class playTable
                     }
                     System.out.println();
                 }
-                for( Player a : players)
+                else
                 {
-                    a.sortHand();
-                   // a.showHand();
-                    a.checkRank();
+                    System.out.println("***Here are the six hands:");
+                    for(Player plr : players)
+                    {
+                        plr.showHand();
+                        System.out.println();
+                    }
+                    for( Player a : players)
+                    {
+                        a.sortHand();
+                    // a.showHand();
+                        a.checkRank();
 
-                    //System.out.println(a.handRank);
+                        //System.out.println(a.handRank);
+                    }
+                    
+                    System.out.println("*** Winning Order ***");
+                    sortHands(players);
+
+                    s.close();
                 }
-                
-                System.out.println("*** Winning Order ***");
-                sortHands(players);
-
-                s.close();
                 //boxofFate b = new boxofFate();
                 //b.decideFate(players);
                 // for(Player play : players)
@@ -295,7 +304,6 @@ public class playTable
                             
                             ranks[3]=Player;
                             break;
-
 
             }
 
