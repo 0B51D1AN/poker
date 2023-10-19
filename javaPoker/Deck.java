@@ -41,7 +41,7 @@ public class Deck extends Card
 
 		}		
 			
-		System.out.println("Deck has been initialized and sorted");
+		//System.out.println("Deck has been initialized and sorted");
 	
 	}
 	
@@ -103,10 +103,20 @@ public class Deck extends Card
 	public void display()
 	{
 
+		int format=0;
 		for(int i=0; i<deck.size(); i++)
 		{
+			if(format==13)
+			{
+				System.out.println();
+				format=0;
+			}
 			deck.get(i).printCard();
+			format++;
 		}
+
+		System.out.println();
+
 
 	}
 

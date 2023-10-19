@@ -119,7 +119,7 @@ public class playTable
         {
             //Card testCard= new Card("10","H");
             Deck deck= new Deck();
-            deck.display();
+           
             System.out.println();
             Player [] game= new Player[] {
 
@@ -134,10 +134,26 @@ public class playTable
 
             deck.shuffle();
 
+            System.out.println("*** USING RANDOMIZED DECK***\n");
+            deck.display();
             deck.deal(game);
+
+
+            System.out.println("\n***Here are the six hands:");
+            for(Player p : game)
+            {
+                p.showHand();
+                System.out.println();
+            }
+
+            System.out.println("\n\n *** REMAINING CARDS IN DECK ***");
+            deck.display();
+            System.out.println();
+
             for(Player p : game)
             {
                 p.sortHand();
+                p.checkRank();
             }
             // for(Player p: game)
             // {
@@ -148,25 +164,16 @@ public class playTable
             //boxofFate b = new boxofFate();
             
             //b.decideFate(game);
-            for(Player p : game)
-            {
-                
-                p.checkRank();
-                //p.showHand();
-                //System.out.print("  -  "+p.handRank+"\n");
-            }
 
             
             // for(Player p : game)
             // {
             //     System.out.print(p.handRank);
             // }
-            System.out.println("*** Winning Order ***");
+            System.out.println("\n*** Winning Order ***");
             sortHands(game);
             
-            System.out.println("\n\n *** REMAINING CARDS IN DECK ***");
-            deck.display();
-            System.out.println();
+            
 
 
         }
