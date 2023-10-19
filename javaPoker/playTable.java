@@ -118,9 +118,8 @@ public class playTable
         else
         {
             //Card testCard= new Card("10","H");
-            System.out.println("***USING RANDOMIZED DECK***");
             Deck deck= new Deck();
-            
+            deck.display();
             System.out.println();
             Player [] game= new Player[] {
 
@@ -134,23 +133,19 @@ public class playTable
             };
 
             deck.shuffle();
-            deck.display();
+
             deck.deal(game);
             for(Player p : game)
             {
                 p.sortHand();
             }
-            System.out.println("***Here are the hands...");
+            // for(Player p: game)
+            // {
+            //     p.showHand();
+            //     System.out.println();
+            // }
 
-            for(Player p: game)
-            {
-                p.showHand();
-                System.out.println();
-            }
-
-            System.out.println("\n\n *** REMAINING CARDS IN DECK ***");
-            deck.display();
-            System.out.println();
+            //boxofFate b = new boxofFate();
             
             //b.decideFate(game);
             for(Player p : game)
@@ -166,10 +161,12 @@ public class playTable
             // {
             //     System.out.print(p.handRank);
             // }
-            System.out.println("---WINNING ORDER---");
+            System.out.println("*** Winning Order ***");
             sortHands(game);
             
-            
+            System.out.println("\n\n *** REMAINING CARDS IN DECK ***");
+            deck.display();
+            System.out.println();
 
 
         }
