@@ -56,9 +56,11 @@ mutable struct Player
     pair2::Int
     kicker::Int
     set::Int
+    r::Int
     function Player()
         hand = Tuple{Int, Int}[]
         handRank = ""
+        r=0
         pair1=0
         pair2=0
         kicker=0
@@ -103,24 +105,34 @@ function determine_hand_rank(player::Player)
     organize_hand_by_face(player)
     if is_straight(player) && is_flush(player) && player.hand[1][2] == 1
         player.handRank = "Royal Flush"
+        r=1
     elseif is_flush(player) && is_straight(player)
         player.handRank = "Straight Flush"
+        r=2
     elseif is_four_of_a_kind(player)
         player.handRank = "Four of a Kind"
+        r=3
     elseif is_full_house(player)
         player.handRank = "Full House"
+        r=4
     elseif is_flush(player)
         player.handRank = "Flush"
+        r=5
     elseif is_straight(player)
         player.handRank = "Straight"
+        r=6
     elseif is_three_of_a_kind(player)
         player.handRank = "Three of a Kind"
+        r=7
     elseif is_two_pair(player)
         player.handRank = "Two Pair"
+        r=8
     elseif is_one_pair(player)
         player.handRank = "Pair"
+        r=9
     else
         player.handRank = "High Card"
+        r=10
     end
 end
 
@@ -327,7 +339,7 @@ function two_pair(players)
 end
 
 function pair(players)
-    sort!(players, by = player -> player.pair, rev = true)
+    sort!(players, by = player -> player.pair1, rev = true)
 
     n = length(players)
     swapped = false
@@ -336,7 +348,7 @@ function pair(players)
         swapped = false
 
         for j in 1:(n - 1 - i)
-            if players[j].pair == players[j + 1].pair
+            if players[j].pair1 == players[j + 1].pair1
                 if players[j].kicker > players[j + 1].kicker
                     players[j], players[j + 1] = players[j + 1], players[j]
                 end
@@ -436,23 +448,79 @@ end
 
 ##MAIN
 
-
+################################################
+##File Input
 if length(ARGS)==1
     input_file=ARGS[1]
     println(input_file)
 else
+################################################
+##Random Deck
+
+
     deck=Deck()
     Shuffle(deck)
     showDeck(deck)
 
     players=[Player(), Player(), Player(), Player(), Player(), Player()]
+    
+    hands=[Vector{Tuple{Int, Int}}([]),Vector{Tuple{Int, Int}}([]),Vector{Tuple{Int, Int}}([]),Vector{Tuple{Int, Int}}([]),Vector{Tuple{Int, Int}}([]),Vector{Tuple{Int, Int}}([])]
+    for i in 1:5
+        for a in 1:6 
+            push!(hands[a], deal(deck))
+        end
+    end 
+    
+    for player in players
+        collect_cards(player,pop!(hands))
+    end
+
+    #for player in players
+    #    show_hand(player)
+    #end
+    
 
 
-    test= Player()
-    testHand= Vector{Tuple{Int, Int}}([deal(deck),deal(deck),deal(deck),deal(deck),deal(deck)])
-    collect_cards(test,testHand)
+   for player in players
+        determine_hand_rank(player)
+        #show_hand(player)
+    end
 
-    determine_hand_rank(test)
-    show_hand(test)
+    hand_rank_values = [
+        ("Royal Flush", 0, []),
+        ("Straight Flush", 1, []),
+        ("Four of a Kind", 2, []),
+        ("Full House", 3, []),
+        ("Flush", 4, []),
+        ("Straight", 5, []),
+        ("Three of a Kind", 6, []),
+        ("Two Pair", 7, []),
+        ("Pair", 8, []),
+        ("High Card", 9, [])
+    ]
+    
+
+    players_by_rank = Dict(rank[1] => rank[3] for rank in hand_rank_values)
+
+    # Add each player to the corresponding list based on their hand rank
+    for player in players
+        push!(players_by_rank[player.handRank], player)
+    end
+
+    
+
+    for (rank, player_list) in players_by_rank
+        if rank in ["Royal Flush", "Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card"]
+            tie_break(player_list, rank_index(rank))  # Run tie-breaker for all ranks
+        end
+    end
+
+    for (rank, player_list) in players_by_rank
+        # println("Players with $rank:")
+        for player in player_list
+            show_hand(player)
+        end
+    end
+
 
 end
