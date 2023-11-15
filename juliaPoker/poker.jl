@@ -364,7 +364,7 @@ end
 
 function high_card(players)
     for player in players
-        if player.hand[1][2] == 1
+        if player.hand[1][2] == 0
             temp = player.hand[1][1]
             popfirst!(player.hand)
             push!(player.hand, (temp, 14))
@@ -475,10 +475,10 @@ else
         collect_cards(player,pop!(hands))
     end
 
-    #for player in players
-    #    show_hand(player)
-    #end
-    
+    for player in players
+        show_hand(player)
+    end
+    print("\n\n\n")
 
 
    for player in players
@@ -507,16 +507,19 @@ else
         push!(players_by_rank[player.handRank], player)
     end
 
-    
-
     for (rank, player_list) in players_by_rank
+       # print(rank)
         if rank in ["Royal Flush", "Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card"]
             tie_break(player_list, rank_index(rank))  # Run tie-breaker for all ranks
         end
     end
 
-    for (rank, player_list) in players_by_rank
-        # println("Players with $rank:")
+    sort(players_by_rank)
+   # sorted_players= sort(collect(keys(players)))
+
+
+    for (key, player_list) in players_by_rank
+       # println("Players with $rank:")
         for player in player_list
             show_hand(player)
         end
