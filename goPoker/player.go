@@ -62,6 +62,17 @@ func (p *Player) RankHand() {
 		if p.isFourOfKind() {
 			p.HandRank = "Four of a Kind"
 			p.NumRank = 2
+			i:=0
+			for i<5{
+				if(p.Hand[i].Face==1){
+					p.Hand[i].Face=14
+				}
+				i++
+			}
+			sort.Slice(p.Hand, func(i, j int) bool {
+				return p.Hand[i].Face < p.Hand[j].Face
+			})
+
 			p.HRank = append(p.HRank, p.Hand[1])
 			return
 		}
@@ -69,6 +80,16 @@ func (p *Player) RankHand() {
 		if p.isFullHouse() {
 			p.HandRank = "Full House"
 			p.NumRank = 3
+			i :=0
+			for i<5{
+				if(p.Hand[i].Face==1){
+					p.Hand[i].Face=14
+				}
+				i++
+			}
+			sort.Slice(p.Hand, func(i, j int) bool {
+				return p.Hand[i].Face < p.Hand[j].Face
+			})
 			p.HRank = append(p.HRank, p.Hand[2])
 			return
 		}
@@ -82,13 +103,18 @@ func (p *Player) RankHand() {
 		if p.isStraight() {
 			p.HandRank = "Straight"
 			p.NumRank = 5
-			p.HRank = append(p.HRank, p.Hand[4])
+			if p.Hand[0].Face == 1 {
+				p.HRank = append(p.HRank, p.Hand[0])
+			} else {
+				p.HRank = append(p.HRank, p.Hand[4])
+			}
 			return
 		}
 	
 		if p.isThreeOfKind() {
 			p.HandRank = "Three of a Kind"
 			p.NumRank = 6
+			
 			p.HRank = append(p.HRank, p.Hand[2])
 			return
 		}
@@ -96,17 +122,70 @@ func (p *Player) RankHand() {
 		if p.isTwoPair() {
 			p.HandRank = "Two Pair"
 			p.NumRank = 7
+			i:=0
+			for i<5{
+				if(p.Hand[i].Face==1){
+					p.Hand[i].Face=14
+				}
+				i++
+			}
+			cardCount := make(map[int]int)
+
+			for _, card := range p.Hand {
+				cardCount[card.Face]++
+			}
+
+			for _, card := range p.Hand {
+
+				if cardCount[card.Face] >= 2 {
+					p.HRank = append(p.HRank, card)
+					cardCount[card.Face] = 0 // Avoid adding the same pair again
+				}
+			}
+			for _, card := range p.Hand {
+				
+				if cardCount[card.Face] >= 1{
+					p.HRank = append(p.HRank, card)
+					cardCount[card.Face] = 0 // Avoid adding the same pair again
+				}
+			}
 			return
 		}
 	
 		if p.isPair() {
 			p.HandRank = "Pair"
 			p.NumRank = 8
+			i:=0
+			for i<5{
+				if(p.Hand[i].Face==1){
+					p.Hand[i].Face=14
+				}
+				i++
+			}
+			cardCount := make(map[int]int)
+
+			for _, card := range p.Hand {
+				cardCount[card.Face]++
+			}
+
+			for _, card := range p.Hand {
+				if cardCount[card.Face] >= 2 {
+					p.HRank = append(p.HRank, card)
+					cardCount[card.Face] = 0 // Avoid adding the same pair again
+				}
+			}
+			
 			return
 		}
 	
 		p.HandRank = "High Card"
 		p.NumRank = 9
+		if p.Hand[0].Face == 1 {
+			p.Hand[0].Face=14
+			sort.Slice(p.Hand, func(i, j int) bool {
+				return p.Hand[i].Face < p.Hand[j].Face
+			})
+		}
 		return
 }
 	
@@ -114,7 +193,7 @@ func (p Player) isFlush() bool {
 	// Implementation for checking flush
 	firstSuit := p.Hand[0].Suit
 	for _, card := range p.Hand {
-		if card.Suit != firstSuit {
+		if card.Suit != firstSuit{
 			return false
 		}
 	}
@@ -230,10 +309,11 @@ func (p Player) isTwoPair() bool {
 	for _, count := range countMap {
 		if count == 2 {
 			pairCount++
+			p.HRank=append(p.HRank,newCard(countMap[count],1))
 		}
 	}
-
 	return pairCount == 2
+
 }
 
 func (p Player) isPair() bool {
@@ -245,7 +325,10 @@ func (p Player) isPair() bool {
 
 	for _, count := range countMap {
 		if count == 2 {
+			//p.HRank=append(p.HRank,newCard(countMap[count],1))
+			//p.HRank[0].printCard()
 			return true
+
 		}
 	}
 
