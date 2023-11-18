@@ -15,7 +15,6 @@ import
 
 func main(){
 
-	
 
 	//c:=newCard(1,1)
 
@@ -65,6 +64,16 @@ func main(){
 				}
 				inputCards = append(inputCards, cardStr)
 				cards = append(cards, NewCardFromString(cardStr))
+			}
+			if len(duplicate)>0{
+				fmt.Println("*** ERROR - DUPLICATE CARD FOUND IN DECK ***")
+				
+				for  i:= range duplicate{
+					fmt.Println(duplicate[i])
+					
+				}
+				
+				os.Exit(1)
 			}
 
 			player := Player{Hand: cards}
