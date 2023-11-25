@@ -8,16 +8,24 @@ use player::Player;
 use crate::card::Card;
 use deck::Deck;
 use core::cmp::Ordering;
-use std::env;
+//use std::env;
 //use std::fs::File;
 use std::io::Read;
-use std::error::Error;
-use std::fs::File;
+//use std::error::Error;
+//use std::fs::File;
 use std::io;
 use std::io::prelude::*;
 use std::path::Path;
 use csv::Reader;
 use std::convert::TryInto;
+
+use std::{
+    env,
+    error::Error,
+    ffi::OsString,
+    fs::File,
+    process,
+};
 
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -27,8 +35,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     {
         //println!("*** File: {}", args[1]);
         let file = File::open(&args[1])?;
-        let mut reader = Reader::from_reader(file);
-
+        let mut reader = csv::ReaderBuilder::new()
+        .has_headers(false)
+        .from_reader(file);
+        
         let mut players = Vec::new();
         let mut input_cards = Vec::new();
         let mut duplicate_cards = Vec::new();
@@ -36,12 +46,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         for record in reader.records() {
             let record = record?;
             //println!("{}",record);
+            //println!("{:?}", record);
             let mut cards = Vec::new();
 
             for field in record.iter() {
-                let mut card = field.trim().to_string();
-                //println!("{}", card);
-                card.retain(|c| !c.is_whitespace());
+                let mut card = field.trim().to_string(); // Trim spaces
+                card.retain(|c| c != ',' && !c.is_whitespace()); // Remove spaces and commas
                 if input_cards.iter().any(|s| &card == s) {
                     duplicate_cards.push(card.clone());
                 }
@@ -59,8 +69,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             {
                 // Implement Player::new based on your Player struct
                 let player = Player::with_cards(temp_card);
+                //player.show_hand();
                 players.push(player);
-                //println!("{}",players.len());
+                
+               
             }   
             else{
                 println!("Error");
@@ -80,6 +92,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         if !duplicate_cards.is_empty() {
             println!("*** ERROR - DUPLICATE CARD(s) DETECTED");
             println!("{:?}", duplicate_cards);
+            process::exit(1);
         }
 
         println!("---Winning Hand Order---");
@@ -89,14 +102,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             // Handle the case where there aren't exactly 6 players
         } else {
             let mut temp_players = [Player::new(),Player::new(),Player::new(),Player::new(),Player::new(),Player::new()];
-
+            
     
             // Assuming the 'players' vector contains exactly 6 players
             for (i, player) in players.iter().enumerate() {
                 temp_players[i] = player.clone(); // Assuming Player is Copy or has a clone method
             }
-    
-            println!("Array: {:?}", temp_players);
+            
+            show_winners(&mut temp_players);
         }
         
         
@@ -189,22 +202,72 @@ fn tie_break(players: &mut Vec<Player>) -> &mut Vec<Player> {
 
         1=>{players.sort_by(|a,b| b.hand[4].suit.cmp(&a.hand[4].suit));} // Straight Flush
 
-        2=>{players.sort_by(|a,b| b.hand[2].face.cmp(&a.hand[2].face));} // Four of a Kind
+        2=>{
+            players.iter_mut().for_each(|p| {
+            for card in &mut p.hand{
+                if card.face == 1 {
+                    card.face = 14;
+                    
+                }
 
-        3=>{players.sort_by(|a,b| b.hand[2].face.cmp(&a.hand[2].face));} // Full House
+            }  
+            p.hand.sort_by(|a,b| a.face.cmp(&b.face));                
+        });
+            players.sort_by(|a,b| b.hand[2].face.cmp(&a.hand[2].face));} // Four of a Kind
+
+        3=>{players.iter_mut().for_each(|p| {
+            for card in &mut p.hand{
+                if card.face == 1 {
+                    card.face = 14;
+                    
+                }
+
+            }  
+            p.hand.sort_by(|a,b| a.face.cmp(&b.face));                
+        });
+            players.sort_by(|a,b| b.hand[2].face.cmp(&a.hand[2].face));} // Full House
 
         4=>{players.sort_by(|a,b| b.hand[4].suit.cmp(&a.hand[4].suit));} // Flush
 
         5=>{players.sort_by(compare_by_suit)} // Straight
 
-        6=>{players.sort_by(|a,b| b.hand[2].face.cmp(&a.hand[2].face));} // Three of a Kind
+        6=>{
+            players.iter_mut().for_each(|p| {
+                for card in &mut p.hand{
+                    if card.face == 1 {
+                        card.face = 14;
+                        
+                    }
 
-        7=>{} // Two Pair
+                }  
+                p.hand.sort_by(|a,b| a.face.cmp(&b.face));                
+            });
+            players.sort_by(|a,b| b.hand[2].face.cmp(&a.hand[2].face));} // Three of a Kind
+
+        7=>{players.iter_mut().for_each(|p| {
+            for card in &mut p.hand{
+                if card.face == 1 {
+                    card.face = 14;
+                    
+                }
+
+            }  
+            p.hand.sort_by(|a,b| a.face.cmp(&b.face));                
+        });
+            players.sort_by(compare_two_pair)} // Two Pair
 
         8=>{
+            players.iter_mut().for_each(|p| {
+                for card in &mut p.hand{
+                    if card.face == 1 {
+                        card.face = 14;
+                        
+                    }
 
-
-        } // Pair
+                }  
+                p.hand.sort_by(|a,b| a.face.cmp(&b.face));                
+            });
+            players.sort_by(compare_by_pair) } // Pair
 
         9=>{
 
@@ -235,9 +298,9 @@ fn compare_two_pair(a: &Player, b: &Player) -> Ordering {
         if a.h_rank[0].face == b.h_rank[0].face {
             return a.h_rank[2].suit.cmp(&b.h_rank[2].suit);
         }
-        return a.h_rank[0].face.cmp(&b.hand[0].face);
+        return b.h_rank[0].face.cmp(&a.hand[0].face);
     }
-    a.h_rank[1].face.cmp(&b.h_rank[1].face)
+    b.h_rank[1].face.cmp(&a.h_rank[1].face)
 }
 
 fn compare_by_high_card(a: &Player, b: &Player)-> Ordering 
@@ -257,4 +320,13 @@ fn compare_by_suit(a: &Player, b: &Player)-> Ordering
     }
     a.hand[4].suit.cmp(&b.hand[4].suit)
 
+}
+
+fn compare_by_pair(a: &Player, b: &Player)-> Ordering
+{
+    if a.h_rank[0].face==b.h_rank[0].face
+    {
+        return a.h_rank[1].suit.cmp(&b.h_rank[1].suit);
+    }
+    b.h_rank[0].face.cmp(&a.h_rank[0].face)
 }

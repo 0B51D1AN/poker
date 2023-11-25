@@ -111,6 +111,10 @@ impl Player
         if self.is_two_pair() {
             self.hand_rank = String::from("Two Pair");
             self.num_rank = 7;
+            if self.h_rank[0].face==1
+            {
+                self.h_rank[0].face=14;
+            }
             // No specific card to add to h_rank
             return;
         }
@@ -118,6 +122,16 @@ impl Player
         if self.is_pair() {
             self.hand_rank = String::from("Pair");
             self.num_rank = 8;
+            if self.h_rank[0].face==1
+            {
+                self.h_rank[0].face=14;
+            }
+            for card in &self.hand{
+                if card.face != self.h_rank[0].face
+                {
+                    self.h_rank.push(card.clone());
+                }
+            }
             //self.h_rank.push(if self.hand[4].face == self.h_rank[0].face { self.hand[4].clone() } else { self.hand[2].clone() });
             return;
         }
@@ -168,22 +182,38 @@ impl Player
         face_counts.iter().any(|&count| count == 3)
     }
 
-    fn is_two_pair(&self) -> bool {
+    fn is_two_pair(&mut self) -> bool {
         let mut face_counts = vec![0; 14];
         for card in &self.hand {
             face_counts[card.face as usize] += 1;
         }
 
-        face_counts.iter().filter(|&&count| count == 2).count() == 2
+        let pairs: Vec<_> = face_counts.iter().enumerate().filter(|&(_, &count)| count == 2).collect();
+
+        if pairs.len() == 2 {
+            pairs.into_iter().for_each(|(face, _)| {
+                self.h_rank.push(Card { face: face as u8, suit: 1 }); // Arbitrary suit value 1
+            });
+            true
+        } else {
+            false
+        }
     }
 
-    fn is_pair(&self) -> bool {
+    fn is_pair(&mut self) -> bool {
         let mut face_counts = vec![0; 14];
         for card in &self.hand {
             face_counts[card.face as usize] += 1;
         }
-
-        face_counts.iter().any(|&count| count == 2)
+        let pairs: Vec<_> = face_counts.iter().enumerate().filter(|&(_, &count)| count == 2).collect();
+        if pairs.len() == 1 {
+            pairs.into_iter().for_each(|(face, _)| {
+                self.h_rank.push(Card { face: face as u8, suit: 1 }); // Arbitrary suit value 1
+            });
+            true
+        } else {
+            false
+        }
     }
 
 }
