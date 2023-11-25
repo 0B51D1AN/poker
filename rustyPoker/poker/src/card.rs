@@ -55,6 +55,7 @@ impl Card
             12 => print!("Q"),
             11 => print!("J"),
             10 => print!("10"),
+            14=> print!("A"),
             _ => print!("{}", self.face),
         }
 

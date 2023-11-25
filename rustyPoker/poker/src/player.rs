@@ -1,6 +1,6 @@
 
 use crate::card::Card;
-
+#[derive(Debug)]
 #[derive(Clone)]
 pub struct Player {
     pub hand_rank: String,
