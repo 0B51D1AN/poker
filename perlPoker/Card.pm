@@ -12,12 +12,20 @@ sub new {
 
 sub get_face {
     my ($self) = @_;
+    bless $self, $class;
     return $self->{face};
 }
 
 sub get_suit {
     my ($self) = @_;
+    bless $self, $class;
     return $self->{suit};
+}
+
+sub set_face{
+    my ($class, $f) = @_;
+    $self->{face}=$f;
+
 }
 
 sub printCard {
@@ -36,10 +44,15 @@ sub printCard {
     print "$face$suit_name";
 }
 
+sub clone {
+    my ($self) = @_;
+    return bless { %$self }, ref($self);
+}
+
 sub from_string {
     my ($class, $card_string) = @_;
 
-    my %face_map = ('J' => 11, 'Q' => 12, 'K' => 13, 'A' => 14);
+    my %face_map = ('J' => 11, 'Q' => 12, 'K' => 13, 'A'=>1);
     my %suit_map = ('S' => 1, 'H' => 2, 'C' => 3, 'D' => 4);
 
     my ($face_str, $suit_str);

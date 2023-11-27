@@ -13,7 +13,7 @@ sub new {
         handRank => "",
         numRank => -1,
         hand => [],
-        hRank => []
+        h_rank => []
     };
     bless $self, $class;
     return $self;
@@ -22,8 +22,8 @@ sub new {
 sub with_cards {
     my ($class, @cards) = @_;
     my $self = {
-        hand_rank => "",
-        num_rank => -1,
+        handRank => "",
+        numRank => -1,
         hand => \@cards,
         h_rank => []
     };
@@ -49,62 +49,64 @@ sub showHand {
     }
 }
 
+
 sub rank_hand {
     my ($self) = @_;
 
-    my @sorted_hand = sort { $a->get_face() <=> $b->get_face() } @{$self->{hand}};
+    @{$self->{hand}} = sort { $a->{face} <=> $b->{face} } @{$self->{hand}};
+    #print @self->{hand};
 
     if ($self->is_flush() && $self->is_straight()) {
-        if ($sorted_hand[0]->get_face() == 1 && $sorted_hand[4]->get_face() == 13) {
-            $self->{hand_rank} = "Royal Flush";
-            $self->{num_rank} = 0;
-            push @{$self->{h_rank}}, $sorted_hand[0]->clone();
+        if ($self->{hand}[0]->{face} == 1 && $self->{hand}[4]->{face} == 13) {
+            $self->{handRank} = "Royal Flush";
+            $self->{numRank} = 0;
+            push @{$self->{h_rank}}, $self->{hand}[0]->clone();
             return;
         }
-        $self->{hand_rank} = "Straight Flush";
-        $self->{num_rank} = 1;
-        push @{$self->{h_rank}}, $sorted_hand[0]->get_face() == 1 ? $sorted_hand[0]->clone() : $sorted_hand[4]->clone();
+        $self->{handRank} = "Straight Flush";
+        $self->{numRank} = 1;
+        push @{$self->{h_rank}}, $self->{hand}[0]->{face} == 1 ? $self->{hand}[0]->clone() : $self->{hand}[4]->clone();
         return;
     }
 
     if ($self->is_four_of_kind()) {
-        $self->{hand_rank} = "Four of a Kind";
-        $self->{num_rank} = 2;
-        push @{$self->{h_rank}}, $sorted_hand[1]->clone(); # Must be one of the four
+        $self->{handRank} = "Four of a Kind";
+        $self->{numRank} = 2;
+        push @{$self->{h_rank}}, $self->{hand}[1]->clone(); # Must be one of the four
         return;
     }
 
     if ($self->is_full_house()) {
-        $self->{hand_rank} = "Full House";
-        $self->{num_rank} = 3;
-        push @{$self->{h_rank}}, $sorted_hand[2]->clone(); # Must be 3pair
+        $self->{handRank} = "Full House";
+        $self->{numRank} = 3;
+        push @{$self->{h_rank}}, $self->{hand}[2]->clone(); # Must be 3pair
         return;
     }
 
     if ($self->is_flush()) {
-        $self->{hand_rank} = "Flush";
-        $self->{num_rank} = 4;
+        $self->{handRank} = "Flush";
+        $self->{numRank} = 4;
         return;
     }
 
     if ($self->is_straight()) {
-        $self->{hand_rank} = "Straight";
-        $self->{num_rank} = 5;
-        push @{$self->{h_rank}}, $sorted_hand[4]->clone();
+        $self->{handRank} = "Straight";
+        $self->{numRank} = 5;
+        push @{$self->{h_rank}}, $self->{hand}[4]->clone();
         return;
     }
 
     if ($self->is_three_of_kind()) {
-        $self->{hand_rank} = "Three of a Kind";
-        $self->{num_rank} = 6;
-        push @{$self->{h_rank}}, $sorted_hand[2]->clone();
+        $self->{handRank} = "Three of a Kind";
+        $self->{numRank} = 6;
+        push @{$self->{h_rank}}, $self->{hand}[2]->clone();
         return;
     }
 
     if ($self->is_two_pair()) {
-        $self->{hand_rank} = "Two Pair";
-        $self->{num_rank} = 7;
-        if ($self->{h_rank}[0]->get_face() == 1) {
+        $self->{handRank} = "Two Pair";
+        $self->{numRank} = 7;
+        if ($self->{h_rank}[0]->{face} == 1) {
             $self->{h_rank}[0]->set_face(14);
         }
         # No specific card to add to h_rank
@@ -112,35 +114,36 @@ sub rank_hand {
     }
 
     if ($self->is_pair()) {
-        $self->{hand_rank} = "Pair";
-        $self->{num_rank} = 8;
-        if ($self->{h_rank}[0]->get_face() == 1) {
+        $self->{handRank} = "Pair";
+        $self->{numRank} = 8;
+        if ($self->{h_rank}[0]->{face} == 1) {
             $self->{h_rank}[0]->set_face(14);
         }
-        foreach my $card (@sorted_hand) {
-            if ($card->get_face() != $self->{h_rank}[0]->get_face()) {
+       foreach my $card (@{ $self->{hand} }) {
+            if ($card->{face} != $self->{h_rank}[0]->{face}) {
                 push @{$self->{h_rank}}, $card->clone();
             }
         }
         return;
     }
 
-    $self->{hand_rank} = "High Card";
-    $self->{num_rank} = 9;
+    $self->{handRank} = "High Card";
+    $self->{numRank} = 9;
 }
 
 
 sub is_straight {
     my ($self) = @_;
 
-    if ($self->{hand}[0]->get_face() == 1 && $self->{hand}[1]->get_face() == 10 &&
-        $self->{hand}[2]->get_face() == 11 && $self->{hand}[3]->get_face() == 12 &&
-        $self->{hand}[4]->get_face() == 13) {
+   # return 0 unless @{$self->{hand}} >= 5; 
+    if ($self->{hand}[0]->{face} == 1 && $self->{hand}[1]->{face} == 10 &&
+        $self->{hand}[2]->{face} == 11 && $self->{hand}[3]->{face} == 12 &&
+        $self->{hand}[4]->{face} == 13) {
         return 1;
     }
 
     for (my $i = 0; $i < 4; $i++) {
-        if ($self->{hand}[$i + 1]->get_face() != $self->{hand}[$i]->get_face() + 1) {
+        if ($self->{hand}[$i + 1]->{face} != $self->{hand}[$i]->{face} + 1) {
             return 0;
         }
     }
@@ -149,10 +152,15 @@ sub is_straight {
 
 sub is_flush {
     my ($self) = @_;
-
-    my $first_suit = $self->{hand}[0]->get_suit();
+    #return 0 unless @{$self->{hand}} >= 5; 
+      
+    my $first_card= $self->{hand}[0];
+    #print $first_card->{suit};
+   # print ref($first_card);
+    my $first_suit= $first_card->{suit};
+    #print ref($first_suit);
     for my $card (@{$self->{hand}}) {
-        if ($card->get_suit() != $first_suit) {
+        if ($card->{suit} != $first_suit) {
             return 0;
         }
     }
@@ -164,7 +172,7 @@ sub is_four_of_kind {
 
     my @face_counts = (0) x 14; # Index 0 represents Face 1 (Ace), and index 13 represents Face 13 (King)
     for my $card (@{$self->{hand}}) {
-        $face_counts[$card->get_face()]++;
+        $face_counts[$card->{face}]++;
     }
 
     for my $count (@face_counts) {
@@ -180,7 +188,7 @@ sub is_full_house {
 
     my @face_counts = (0) x 14;
     for my $card (@{$self->{hand}}) {
-        $face_counts[$card->get_face()]++;
+        $face_counts[$card->{face}]++;
     }
 
     my $has_three = 0;
@@ -200,7 +208,7 @@ sub is_three_of_kind {
 
     my @face_counts = (0) x 14;
     for my $card (@{$self->{hand}}) {
-        $face_counts[$card->get_face()]++;
+        $face_counts[$card->{face}]++;
     }
 
     for my $count (@face_counts) {
@@ -216,7 +224,7 @@ sub is_two_pair {
 
     my @face_counts = (0) x 14;
     for my $card (@{$self->{hand}}) {
-        $face_counts[$card->get_face()]++;
+        $face_counts[$card->{face}]++;
     }
 
     my @pairs = grep { $face_counts[$_] == 2 } 0..$#face_counts;
@@ -235,7 +243,7 @@ sub is_pair {
 
     my @face_counts = (0) x 14;
     for my $card (@{$self->{hand}}) {
-        $face_counts[$card->get_face()]++;
+        $face_counts[$card->{face}]++;
     }
 
     my @pairs = grep { $face_counts[$_] == 2 } 0..$#face_counts;

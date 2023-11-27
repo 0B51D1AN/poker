@@ -5,34 +5,229 @@ use FindBin qw($RealBin);
 use lib $RealBin;
 use Card;  # Include the Card module
 use Deck;
-use Player
-# Create a Card object
-my $card = Card->new(13, 2);  # King of Hearts
-my $card_from_string = Card->from_string('AS');
-#$card_from_string->printCard();
+use Player;
+use Text::CSV;
 
 
-my $deck=Deck->new();
+my @players;
 
-$deck->show_deck();
 
-my @hand = (
-    Card->new(1, 1),  # Ace of Spades
-    Card->new(2, 1),  # Two of Spades
-    Card->new(3, 1),  # Three of Spades
-    Card->new(4, 1),  # Four of Spades
-    Card->new(5, 1),  # Five of Spades
-);
 
-# Create a Player object with the test hand
-my $test_player = Player->new(\@hand);
+# Check if a filename argument is provided
+if (scalar @ARGV == 1) {
+   my $file = $ARGV[0];
 
-# Rank the test player's hand
-$test_player->rank_hand();
+    my $csv = Text::CSV->new({ binary => 1, eol => $/ }) or die "Cannot use CSV: " . Text::CSV->error_diag();
 
-# Display the hand and its rank
-$test_player->showHand();
-print "Hand Rank: " . $test_player->get_hand_rank() . "\n";
+    open my $fh, '<', $file or die "Unable to open file: $!";
 
-# Print the card information using the printCard() function
-#$card->printCard();
+    my @rows;
+    while (my $row = $csv->getline($fh)) {
+        push @rows, $row;
+    }
+
+
+    
+
+    foreach my $row (@rows) {
+        my @hand;
+       foreach my $card (@$row) 
+       {
+
+            $card =~ s/\s+//g;  
+            my $tempCard= Card->from_string($card); 
+            push @hand, $tempCard;
+
+       }
+        my $player = Player->with_cards(@hand);
+        push @players, $player;
+    }
+    foreach my $player (@players) {
+        $player->rank_hand(); 
+        #$player->showHand();  # Assuming you have a showHand method in the Player class
+        
+    }
+    close $fh;
+
+    show_winners(@players);
+}
+else
+{
+
+    my $deck=Deck->new();
+
+    
+
+    # Create 6 Player objects and store them in the array
+    for (my $i = 0; $i < 6; $i++) {
+        my $player = Player->new();
+        push @players, $player;
+    }
+
+    print "*** USING RANDOMIZED DECK OF CARDS ***\n\n";
+
+    print "*** Shuffled 52 card deck:\n";
+    $deck->shuffle_deck();
+
+    $deck->show_deck();
+
+    for my $a (0..4) {
+        
+        for my $i (0..5) {
+            my $card = $deck->pop_card();
+            $players[$i]->pushCard($card);
+        }
+        
+        
+    }
+
+    print "*** Here are the six hands...\n\n";
+
+    for my $player (@players) {
+        
+        $player->showHand();   
+        $player->rank_hand();
+    }
+
+    print "\n*** Here is what remains in the deck...\n\n";
+
+    $deck->show_deck();
+
+
+    print "\n---WINNING HAND ORDER---\n\n";
+
+    show_winners(@players);
+
+}
+
+
+
+
+##########################################################################
+#FUNCTIONS
+
+sub show_winners {
+    my (@players) = @_;
+
+    my @rank_tiers = map { [] } (0..9);  # Initializing 10 empty arrays
+
+    for my $player (@players) {
+        push @{$rank_tiers[$player->{numRank}]}, $player;
+    }
+
+    foreach my $v (\@rank_tiers) {
+        if (@$v > 1) {
+            tie_break(@$v);
+        }
+    }
+
+
+    foreach my $v (@rank_tiers) {
+        if (@$v) {
+            foreach my $player (@$v) {
+                $player->showHand();
+            }
+        }
+    }
+
+
+}
+
+
+sub tie_break {
+    my ($players) = @_;
+
+        for (\@players[0]->{numRank}) {
+            if ($_ == 0 || $_ == 1 || $_ == 4) {
+                @players = sort { $b->{hand}[4]->{suit}<=> $a->{hand}[4]->{suit} } @players;
+            }
+            elsif ($_ == 2 || $_ == 3 || $_ == 6) {
+                foreach my $player (\@players) {
+                    #print ref($player);
+                    foreach my $card (@{$player->{hand}} ) {
+                        $card->{face} = 14 if $card->{face} == 1;
+                    }
+                    @{$player->{hand}} = sort { $a->{face} <=> $b->{face} } \@{ $player->{hand} };
+                }
+                @players = sort { $b->{hand}[2]->{face} <=> $a->{hand}[2]->{face} } @players;
+            }
+            elsif ($_ == 5) {
+                # Implement the comparison function 'compare_by_suit' in Perl for sorting by suit
+                @players = sort compare_by_suit \@players;
+            }
+            elsif ($_ == 7) {
+                # Implement the comparison function 'compare_two_pair' in Perl for sorting by two pairs
+                @players = sort compare_two_pair \@players;
+            }
+            elsif($_ == 8){
+                @players= sort compare_pair \@players;
+
+            }
+            elsif ($_ == 9) {
+               
+                    foreach my $player (@players) {
+                        #print ref($player);
+                        if ($player->{hand}[0]->{face} == 1)  {
+                            $player->{hand}[0]->{face} = 14;
+                            @{$player->{hand}} = sort { $a->{face} <=> $b->{face} } \@{ $player->{hand} };
+                        }
+                    
+                @players = sort compare_by_high_card \@players;
+                }
+            }
+        }
+        return $players;
+    
+}
+sub compare_by_suit {
+     my ($a, $b) = @_;
+ #    print ref($a), "\n";  
+    if ($a->{hand}[4]->{suit} == $b->{hand}[4]->{suit}) {
+        return $b->{hand}[4]{face} <=> $a->{hand}[4]{face};
+    }
+    return $a->{hand}[4]{suit} <=> $b->{hand}[4]{suit};
+}
+
+sub compare_by_high_card {
+    my ($a, $b) = @_;
+    print ref($a);
+    
+    if ($a->{hand}[4]{face} == $b->{hand}[4]{face}) {
+         if ($a->{hand}[4]{suit} == $b->{hand}[4]{suit}) {
+            return $b->{hand}[4]{face} <=> $a->{hand}[4]{face};
+        }
+       return $a->{hand}[4]{suit} <=> $b->{hand}[4]{suit};
+    }
+    return $b->{hand}[4]{face} <=> $a->{hand}[4]{face};
+}
+
+sub compare_two_pair {
+    my ($a, $b) = @_;
+
+    if ($a->{h_rank}[1]{face} == $b->{h_rank}[1]{face}) {
+        if ($a->{h_rank}[0]{face} == $b->{h_rank}[0]{face}) 
+        {
+            if ($a->{hand}[4]->{suit} == $b->{hand}[4]->{suit})
+            {
+                return $b->{hand}[4]{face} <=> $a->{hand}[4]{face};
+            }
+            return $a->{hand}[4]{suit} <=> $b->{hand}[4]{suit};
+        }
+        return $b->{h_rank}[0]{face} <=> $a->{h_rank}[0]{face};
+    }
+    return $b->{h_rank}[1]{face} <=> $a->{h_rank}[1]{face};
+}
+
+
+sub compare_pair {
+    my ($a, $b) = @_;
+
+    if ($a->{h_rank}[0]{face} == $b->{h_rank}[0]{face}) {
+        
+        return $b->{h_rank}[1]{suit} <=> $a->{h_rank}[1]{suit};
+    }
+    return $b->{h_rank}[0]{face} <=> $a->{h_rank}[0]{face};
+
+}
+
+1;
