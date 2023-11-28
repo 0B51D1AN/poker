@@ -16,8 +16,9 @@ my @players;
 # Check if a filename argument is provided
 if (scalar @ARGV == 1) {
    my $file = $ARGV[0];
-
+    print "*** USING TEST DECK ***\n";
     my $csv = Text::CSV->new({ binary => 1, eol => $/ }) or die "Cannot use CSV: " . Text::CSV->error_diag();
+    print "\n*** File: ".$file."\n";
 
     open my $fh, '<', $file or die "Unable to open file: $!";
 
@@ -27,7 +28,8 @@ if (scalar @ARGV == 1) {
     }
 
 
-    
+    my @readCards;
+    my @duplicates;
 
     foreach my $row (@rows) {
         my @hand;
@@ -42,13 +44,28 @@ if (scalar @ARGV == 1) {
         my $player = Player->with_cards(@hand);
         push @players, $player;
     }
+
+    if(@duplicates>0)
+    {
+        print "*** ERROR: DUPLICATE CARD DETECTED ***\n";
+
+        for my $card (@duplicates)
+        {
+            print $card;
+        }
+    }
+
+
+
     for my $player (@players) {
-        $player->rank_hand(); 
-        #$player->showHand();  # Assuming you have a showHand method in the Player class
+         
+        $player->showHand();
+        $player->rank_hand();  # Assuming you have a showHand method in the Player class
         
     }
     close $fh;
 
+    print "\n---WINNING HAND ORDER---\n";
     show_winners(@players);
 }
 else
