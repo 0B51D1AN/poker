@@ -49,6 +49,20 @@ sub showHand {
     }
 }
 
+sub clone {
+    my ($self) = @_;
+    
+    my $class = ref($self) || $self;
+    my $cloned_player = $class->new();
+    
+    # Copying attributes from the original player to the cloned player
+    $cloned_player->{handRank} = $self->{handRank};
+    $cloned_player->{numRank} = $self->{numRank};
+    $cloned_player->{hand} = [ @{$self->{hand}} ];  # Creating a shallow copy of the array
+    $cloned_player->{h_rank} = [ @{$self->{h_rank}} ];  # Creating a shallow copy of the array
+    
+    return $cloned_player;
+}
 
 sub rank_hand {
     my ($self) = @_;
@@ -117,7 +131,7 @@ sub rank_hand {
         $self->{handRank} = "Pair";
         $self->{numRank} = 8;
         if ($self->{h_rank}[0]->{face} == 1) {
-            $self->{h_rank}[0]->set_face(14);
+            $self->{h_rank}[0]->{face}=14;
         }
        foreach my $card (@{ $self->{hand} }) {
             if ($card->{face} != $self->{h_rank}[0]->{face}) {

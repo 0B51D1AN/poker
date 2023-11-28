@@ -7,7 +7,7 @@ use Card;  # Include the Card module
 use Deck;
 use Player;
 use Text::CSV;
-
+use feature 'switch';
 
 my @players;
 
@@ -42,7 +42,7 @@ if (scalar @ARGV == 1) {
         my $player = Player->with_cards(@hand);
         push @players, $player;
     }
-    foreach my $player (@players) {
+    for my $player (@players) {
         $player->rank_hand(); 
         #$player->showHand();  # Assuming you have a showHand method in the Player class
         
@@ -107,81 +107,84 @@ else
 #FUNCTIONS
 
 sub show_winners {
-    my (@players) = @_;
+    my ($players) = @_;
 
     my @rank_tiers = map { [] } (0..9);  # Initializing 10 empty arrays
 
-    for my $player (@players) {
-        push @{$rank_tiers[$player->{numRank}]}, $player;
+    foreach my $player (@players) {
+        push @{$rank_tiers[$player->{numRank}]}, $player->clone();
     }
 
-    foreach my $v (\@rank_tiers) {
+    foreach my $v (@rank_tiers) {
         if (@$v > 1) {
-            tie_break(@$v);
+            tie_break($v);
         }
     }
-
 
     foreach my $v (@rank_tiers) {
         if (@$v) {
             foreach my $player (@$v) {
+                #print ref($player);
                 $player->showHand();
             }
         }
     }
-
-
 }
-
 
 sub tie_break {
     my ($players) = @_;
 
-        for (\@players[0]->{numRank}) {
-            if ($_ == 0 || $_ == 1 || $_ == 4) {
-                @players = sort { $b->{hand}[4]->{suit}<=> $a->{hand}[4]->{suit} } @players;
-            }
-            elsif ($_ == 2 || $_ == 3 || $_ == 6) {
-                foreach my $player (\@players) {
-                    #print ref($player);
-                    foreach my $card (@{$player->{hand}} ) {
-                        $card->{face} = 14 if $card->{face} == 1;
-                    }
-                    @{$player->{hand}} = sort { $a->{face} <=> $b->{face} } \@{ $player->{hand} };
-                }
-                @players = sort { $b->{hand}[2]->{face} <=> $a->{hand}[2]->{face} } @players;
-            }
-            elsif ($_ == 5) {
-                # Implement the comparison function 'compare_by_suit' in Perl for sorting by suit
-                @players = sort compare_by_suit \@players;
-            }
-            elsif ($_ == 7) {
-                # Implement the comparison function 'compare_two_pair' in Perl for sorting by two pairs
-                @players = sort compare_two_pair \@players;
-            }
-            elsif($_ == 8){
-                @players= sort compare_pair \@players;
-
-            }
-            elsif ($_ == 9) {
-               
-                    foreach my $player (@players) {
-                        #print ref($player);
-                        if ($player->{hand}[0]->{face} == 1)  {
-                            $player->{hand}[0]->{face} = 14;
-                            @{$player->{hand}} = sort { $a->{face} <=> $b->{face} } \@{ $player->{hand} };
-                        }
-                    
-                @players = sort compare_by_high_card \@players;
-                }
-            }
-        }
-        return $players;
+    my $num_rank = $players->[0]{numRank};
     
+    if ($num_rank == 0 || $num_rank == 1 || $num_rank == 4) {
+        @$players = sort { $b->{hand}[4]{suit} <=> $a->{hand}[4]{suit} } @$players;
+    }
+    elsif ($num_rank == 2 || $num_rank == 3 || $num_rank == 6) {
+       foreach my $player (@$players) {
+            foreach my $card (@{$player->{hand}}) {
+                $card->{face} = 14 if $card->{face} == 1;
+            }
+            @{$player->{hand}} = sort { $a->{face} <=> $b->{face} } @{$player->{hand}};
+        }
+
+        @$players = sort { $b->{hand}[2]{face} <=> $a->{hand}[2]{face} } @$players;
+    }
+    elsif ($num_rank == 5) {
+        @$players = sort {compare_by_suit($a,$b)} @$players;
+    }
+    elsif ($num_rank == 7) {
+         foreach my $player (@$players) {
+            foreach my $card (@{$player->{hand}}) {
+                $card->{face} = 14 if $card->{face} == 1;
+            }
+            @{$player->{hand}} = sort { $a->{face} <=> $b->{face} } @{$player->{hand}};
+        }
+        @$players = sort {compare_two_pair($a,$b)} @$players;
+    }
+    elsif ($num_rank == 8) {
+         foreach my $player (@$players) {
+            foreach my $card (@{$player->{hand}}) {
+                $card->{face} = 14 if $card->{face} == 1;
+            }
+            @{$player->{hand}} = sort { $a->{face} <=> $b->{face} } @{$player->{hand}};
+        }
+        @$players = sort {compare_pair($a,$b)} @$players;
+    }
+    elsif ($num_rank == 9) {
+        foreach my $player (@$players) {
+            foreach my $card (@{$player->{hand}}) {
+                $card->{face} = 14 if $card->{face} == 1;
+            }
+            @{$player->{hand}} = sort { $a->{face} <=> $b->{face} } @{$player->{hand}};
+        }
+        @$players = sort { compare_by_high_card($a, $b) } @$players;
+
+    }
 }
+
 sub compare_by_suit {
      my ($a, $b) = @_;
- #    print ref($a), "\n";  
+ # print ref($a), "\n";  
     if ($a->{hand}[4]->{suit} == $b->{hand}[4]->{suit}) {
         return $b->{hand}[4]{face} <=> $a->{hand}[4]{face};
     }
@@ -190,8 +193,8 @@ sub compare_by_suit {
 
 sub compare_by_high_card {
     my ($a, $b) = @_;
-    print ref($a);
-    
+    #print ref($a);
+    #print "yo";
     if ($a->{hand}[4]{face} == $b->{hand}[4]{face}) {
          if ($a->{hand}[4]{suit} == $b->{hand}[4]{suit}) {
             return $b->{hand}[4]{face} <=> $a->{hand}[4]{face};
