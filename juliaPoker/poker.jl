@@ -1,5 +1,5 @@
 using Random
-
+using CSV
 mutable struct Deck
     cards::Vector{Tuple{Int, Int}}
     
@@ -91,7 +91,7 @@ end
     
 function card_to_string(card::Tuple{Int, Int})
     suits = ["S", "H", "C", "D"]
-    faces = string.([2,3,4,5,6,7,8,9,10, "J", "Q", "K", "A","A"])##Extra A for when ace is high
+    faces = string.(["A",2,3,4,5,6,7,8,9,10, "J", "Q", "K", "A"])##Extra A for when ace is high
     suit_str = suits[card[1]]
     face_str = faces[card[2]]
     return "$face_str$suit_str"
@@ -103,7 +103,7 @@ end
 
 function determine_hand_rank(player::Player)
     organize_hand_by_face(player)
-    if is_straight(player) && is_flush(player) && player.hand[1][2] == 1
+    if is_straight(player) && is_flush(player)
         player.handRank = "Royal Flush"
         r=1
     elseif is_flush(player) && is_straight(player)
@@ -170,6 +170,7 @@ end
 ### Hand rank Methods
 
 function is_straight(player::Player)
+    #show_hand(player)
     if player.hand[1][2] == 1 && player.hand[2][2] == 10 && player.hand[3][2] == 11 && player.hand[4][2] == 12 && player.hand[5][2] == 13
         return true
     end
@@ -406,40 +407,45 @@ end
 #File read Methods
 
 
-function read_hands_from_csv(file_path::String)
-    hands = Tuple{String}[]
-    duplicateCards = Tuple{String}[]
+    function read_hands_from_csv(file_path)
+        hands = []
+        readCards = []
+        duplicateCards = []
     
-    open(file_path, "r") do file
-        for line in eachline(file)
-            hand = strip.(split(line, ','))
-            
+        csvfile = CSV.File(file_path; header=false)
+    
+        for row in eachrow(csvfile)
+            # Assuming the first column contains card information
+            card_column = row[1]
+    
+            hand = [strip(card) for card in card_column]
+    
             if length(hand) != 5
                 println("Each hand must have exactly 5 cards.")
-                return
+                exit(1)
             end
-            
+    
             for card in hand
                 if card in readCards
                     push!(duplicateCards, card)
                 end
                 push!(readCards, card)
             end
-            
+    
             push!(hands, hand)
         end
-    end
     
-    if length(duplicateCards) > 0
-        println("Duplicate Cards detected:")
-        for card in duplicateCards
-            println(card)
+        if length(duplicateCards) > 0
+            println("Duplicate Cards detected:")
+            for card in duplicateCards
+                println(card)
+            end
+            exit(1)
         end
-        return
+    
+        return hands
     end
     
-    return hands
-end
 
 
 
@@ -451,8 +457,63 @@ end
 ################################################
 ##File Input
 if length(ARGS)==1
-    input_file=ARGS[1]
-    println(input_file)
+    input_file = ARGS[1]
+    
+    println("File read: $input_file")
+    
+    players = [Player(),Player(),Player(),Player(),Player(),Player()]
+    
+    hands = read_hands_from_csv(input_file)
+    
+    for (i, hand) in enumerate(hands)
+        for card_str in hand
+            suit, face = card_str[end], card_str[1]
+            suit_num = Dict('S' => 1, 'H' => 2, 'C' => 3, 'D' => 4)[suit]
+            face_num = Dict('A' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9, '1' => 10, 'J' => 11, 'Q' => 12, 'K' => 13)[face]
+            card = (suit_num, face_num)
+            push!(players[i].hand, card)
+        end
+    end
+    
+    println("\nHere are the hands: ")
+    
+    for player in players
+        show_hand(player)
+        determine_hand_rank(player)
+    end
+    
+    println("\nHands in Winning order: ")
+    
+    hand_rank_values = [
+        ("Royal Flush", 1, []),
+        ("Straight Flush", 2, []),
+        ("Four of a Kind", 3, []),
+        ("Full House", 4, []),
+        ("Flush", 5, []),
+        ("Straight", 6, []),
+        ("Three of a Kind", 7, []),
+        ("Two Pair", 8, []),
+        ("Pair", 9, []),
+        ("High Card", 10, [])
+    ]
+    
+    players_by_rank = Dict(rank[1] => rank[3] for rank in hand_rank_values)
+    
+    for player in players
+        push!(players_by_rank[player.handRank], player)
+    end
+    
+    for (rank, player_list) in pairs(players_by_rank)
+        if rank in ["Royal Flush", "Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card"]
+            tie_break(player_list, rank_index(rank))
+        end
+    end
+    
+    for (rank, player_list) in pairs(players_by_rank)
+        for player in player_list
+            show_hand(player)
+        end
+    end
 else
 ################################################
 ##Random Deck
@@ -478,7 +539,7 @@ else
     for player in players
         show_hand(player)
     end
-    print("\n\n\n")
+    print("\n")
 
 
    for player in players
@@ -487,16 +548,16 @@ else
     end
 
     hand_rank_values = [
-        ("Royal Flush", 0, []),
-        ("Straight Flush", 1, []),
-        ("Four of a Kind", 2, []),
-        ("Full House", 3, []),
-        ("Flush", 4, []),
-        ("Straight", 5, []),
-        ("Three of a Kind", 6, []),
-        ("Two Pair", 7, []),
-        ("Pair", 8, []),
-        ("High Card", 9, [])
+        ("Royal Flush", 1, []),
+        ("Straight Flush", 2, []),
+        ("Four of a Kind", 3, []),
+        ("Full House", 4, []),
+        ("Flush", 5, []),
+        ("Straight", 6, []),
+        ("Three of a Kind", 7, []),
+        ("Two Pair", 8, []),
+        ("Pair", 9, []),
+        ("High Card", 10, [])
     ]
     
 
@@ -514,12 +575,15 @@ else
         end
     end
 
-    sort(players_by_rank)
-   # sorted_players= sort(collect(keys(players)))
+    #sort(players_by_rank)
+   #sorted_players= sort(collect(keys(players)))
+   ranks =["Royal Flush", "Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card"]
 
 
-    for (key, player_list) in players_by_rank
-       # println("Players with $rank:")
+   sorted_pairs = sort(collect(players_by_rank), by = x -> findfirst(isequal(x[1]),ranks))
+   sorted_dict = Dict(sorted_pairs)
+    for (key, player_list) in sorted_dict
+      #println(key)
         for player in player_list
             show_hand(player)
         end

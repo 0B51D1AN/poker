@@ -46,4 +46,4 @@ function card_to_string(card::Tuple{Int, Int})
 end
 
 
-players= [Player(), Player(), Player()]
+#  players= [Player(), Player(), Player()]
