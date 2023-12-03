@@ -56,11 +56,11 @@ mutable struct Player
     pair2::Int
     kicker::Int
     set::Int
-    r::Int
+    rank::Int
     function Player()
         hand = Tuple{Int, Int}[]
         handRank = ""
-        r=0
+        rank=0
         pair1=0
         pair2=0
         kicker=0
@@ -105,43 +105,43 @@ function determine_hand_rank(player::Player)
     organize_hand_by_face(player)
     if is_straight(player) && is_flush(player)
         player.handRank = "Royal Flush"
-        r=1
+        player.rank=1
     elseif is_flush(player) && is_straight(player)
         player.handRank = "Straight Flush"
-        r=2
+        player.rank=2
     elseif is_four_of_a_kind(player)
         player.handRank = "Four of a Kind"
-        r=3
+        player.rank=3
     elseif is_full_house(player)
         player.handRank = "Full House"
-        r=4
+        player.rank=4
     elseif is_flush(player)
         player.handRank = "Flush"
-        r=5
+        player.rank=5
     elseif is_straight(player)
         player.handRank = "Straight"
-        r=6
+        player.rank=6
     elseif is_three_of_a_kind(player)
         player.handRank = "Three of a Kind"
-        r=7
+        player.rank=7
     elseif is_two_pair(player)
         player.handRank = "Two Pair"
-        r=8
+        player.rank=8
     elseif is_one_pair(player)
         player.handRank = "Pair"
-        r=9
+        player.rank=9
     else
         player.handRank = "High Card"
-        r=10
+        player.rank=10
     end
 end
 
 function tie_break(players, index::Int)
-    if index == 0  # RoyalStraightFlush
+    if index == 1  # RoyalStraightFlush
         sort!(players, by = player -> player.hand[5][1])  # Sort by suit
-    elseif index == 1  # StraightFlush
+    elseif index == 2  # StraightFlush
         flush(players)
-    elseif index == 2  # FourofaKind
+    elseif index == 3  # FourofaKind
         for player in players
             if player.hand[1][2] == 1
                 temp = player.hand[1][1]
@@ -150,19 +150,19 @@ function tie_break(players, index::Int)
             end
         end
         sort!(players, by = player -> player.hand[2][2], rev = true)
-    elseif index == 3  # FullHouse
+    elseif index == 4  # FullHouse
         sort!(players, by = player -> player.hand[3][2], rev = true)
-    elseif index == 4  # Flush
+    elseif index == 5  # Flush
         flush(players)
-    elseif index == 5  # Straight
+    elseif index == 6  # Straight
         straight(players)
-    elseif index == 6  # ThreeofaKind
+    elseif index == 7  # ThreeofaKind
         sort!(players, by = player -> player.set, rev = true)
-    elseif index == 7  # TwoPair
+    elseif index == 8  # TwoPair
         two_pair(players)
-    elseif index == 8  # Pair
+    elseif index ==9  # Pair
         pair(players)
-    elseif index == 9  # HighCard
+    elseif index == 10  # HighCard
         high_card(players)
     end
 end
@@ -192,7 +192,7 @@ function is_flush(player::Player)
 end
 
 function is_four_of_a_kind(player::Player)
-    for i in 3:5
+    for i in 4:5
         if player.hand[i][2] == player.hand[i - 1][2] == player.hand[i - 2][2] == player.hand[i - 3][2]
             return true
         end
@@ -497,28 +497,38 @@ if length(ARGS)==1
         ("High Card", 10, [])
     ]
     
-    players_by_rank = Dict(rank[1] => rank[3] for rank in hand_rank_values)
+    ranks =[[],[],[],[],[],[],[],[],[],[]]
+
     
+    
+    # Add each player to the corresponding list based on their hand rank
     for player in players
-        push!(players_by_rank[player.handRank], player)
+        push!(ranks[player.rank], player)
     end
-    
-    for (rank, player_list) in pairs(players_by_rank)
-        if rank in ["Royal Flush", "Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card"]
-            tie_break(player_list, rank_index(rank))
+   # print(sorted_dict)
+   for i in 1:10
+        if !isempty(ranks[i])
+            tie_break(ranks[i],i)
         end
+
     end
-    
-    for (rank, player_list) in pairs(players_by_rank)
-        for player in player_list
-            show_hand(player)
+
+
+    println("--WINNING HAND ORDER--")
+
+    for i in 1:10
+        if !isempty(ranks[i])
+            for player in ranks[i]
+                show_hand(player)
+            end
         end
+
     end
 else
 ################################################
 ##Random Deck
 
-
+    println("***USING RANDOMIZED DECK***")
     deck=Deck()
     Shuffle(deck)
     showDeck(deck)
@@ -535,6 +545,7 @@ else
     for player in players
         collect_cards(player,pop!(hands))
     end
+    println("***Here are the hands:\n")
 
     for player in players
         show_hand(player)
@@ -548,46 +559,56 @@ else
     end
 
     hand_rank_values = [
-        ("Royal Flush", 1, []),
-        ("Straight Flush", 2, []),
-        ("Four of a Kind", 3, []),
-        ("Full House", 4, []),
-        ("Flush", 5, []),
-        ("Straight", 6, []),
-        ("Three of a Kind", 7, []),
-        ("Two Pair", 8, []),
-        ("Pair", 9, []),
-        ("High Card", 10, [])
+        ("Royal Flush", []),
+        ("Straight Flush",[]),
+        ("Four of a Kind",[]),
+        ("Full House", []),
+        ("Flush", []),
+        ("Straight", []),
+        ("Three of a Kind", []),
+        ("Two Pair", []),
+        ("Pair", []),
+        ("High Card", [])
     ]
     
+    ranks =[[],[],[],[],[],[],[],[],[],[]]
 
-    players_by_rank = Dict(rank[1] => rank[3] for rank in hand_rank_values)
-
+    
+    
     # Add each player to the corresponding list based on their hand rank
     for player in players
-        push!(players_by_rank[player.handRank], player)
+        push!(ranks[player.rank], player)
+    end
+   # print(sorted_dict)
+   for i in 1:10
+        if !isempty(ranks[i])
+            tie_break(ranks[i],i)
+        end
+
     end
 
-    for (rank, player_list) in players_by_rank
-       # print(rank)
-        if rank in ["Royal Flush", "Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card"]
-            tie_break(player_list, rank_index(rank))  # Run tie-breaker for all ranks
+
+    println("--WINNING HAND ORDER--")
+
+    for i in 1:10
+        if !isempty(ranks[i])
+            for player in ranks[i]
+                show_hand(player)
+            end
         end
+
     end
 
     #sort(players_by_rank)
    #sorted_players= sort(collect(keys(players)))
-   ranks =["Royal Flush", "Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card"]
 
 
-   sorted_pairs = sort(collect(players_by_rank), by = x -> findfirst(isequal(x[1]),ranks))
-   sorted_dict = Dict(sorted_pairs)
-    for (key, player_list) in sorted_dict
-      #println(key)
-        for player in player_list
-            show_hand(player)
-        end
-    end
+   
+   #println(players_by_rank)
 
+  
+
+    
+    
 
 end
