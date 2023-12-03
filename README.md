@@ -13,6 +13,7 @@ Go
 Perl
 Installing dependencies:
     -If CPAN is installed, run "cpan Text::CSV" to install neede dependencies
+        -NOTE You can find perl modules in the CPAN website: https://metacpan.org
     -If CPAN is not provided, dependencies have been manually included within dependencies/ folder.
         - Within ExtUtils folder, run the following commands: 
         perl Makefile.PL
