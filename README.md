@@ -3,7 +3,7 @@ Compilation Instructions:
 
 Julia
  
-Enter Juila IDE by typing "juila" inside the terminal. Install the CSV packages by typing in the command: import pkg; Pkg.add("CSV")
+Enter Juila IDE by typing "julia" inside the terminal. Install the CSV packages by typing in the command: import pkg; Pkg.add("CSV")
 -Library should now be updated.
 -Run program now by writing "julia poker.jl" (include any testhand you would like by including the file path after the program call)
 
